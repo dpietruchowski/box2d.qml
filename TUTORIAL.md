@@ -49,7 +49,7 @@ Window {
     World {
         id: world
         anchors.fill: parent
-        gravity: Qt.point(0, -9.8)  // Standard Earth gravity
+        gravity: Qt.point(0, 9.8)  // Standard Earth gravity (positive Y is down in QML)
         running: true
         
         // Static ground

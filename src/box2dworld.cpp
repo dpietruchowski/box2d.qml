@@ -26,14 +26,15 @@ private:
 
 Box2DWorld::Box2DWorld(QQuickItem *parent)
     : QQuickItem(parent)
-    , m_gravity(0.0, -10.0)
+    , m_gravity(0.0, 10.0)
     , m_running(true)
     , m_timeStep(1.0 / 60.0)
     , m_velocityIterations(8)
     , m_positionIterations(3)
     , m_pixelsPerMeter(32.0)
 {
-    m_world = std::make_unique<b2World>(b2Vec2(m_gravity.x(), m_gravity.y()));
+    // Convert from QML coordinates (Y down) to Box2D coordinates (Y up)
+    m_world = std::make_unique<b2World>(b2Vec2(m_gravity.x(), -m_gravity.y()));
     m_contactListener = std::make_unique<ContactListener>(this);
     m_world->SetContactListener(m_contactListener.get());
 
@@ -58,7 +59,8 @@ void Box2DWorld::setGravity(const QPointF &gravity)
 
     m_gravity = gravity;
     if (m_world)
-        m_world->SetGravity(b2Vec2(gravity.x(), gravity.y()));
+        // Convert from QML coordinates (Y down) to Box2D coordinates (Y up)
+        m_world->SetGravity(b2Vec2(gravity.x(), -gravity.y()));
     emit gravityChanged();
 }
 

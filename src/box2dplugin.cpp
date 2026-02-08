@@ -29,6 +29,6 @@ void Box2DPlugin::registerTypes(const char *uri)
     // Register enums
     qmlRegisterUncreatableMetaObject(
         Body::staticMetaObject,
-        uri, 2, 0, "Body",
+        uri, 2, 0, "BodyType",
         QStringLiteral("Error: only enums"));
 }

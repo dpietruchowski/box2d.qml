@@ -13,7 +13,7 @@ Window {
     World {
         id: physicsWorld
         anchors.fill: parent
-        gravity: Qt.point(0, -9.8)
+        gravity: Qt.point(0, 9.8)
         running: true
         pixelsPerMeter: 32
         

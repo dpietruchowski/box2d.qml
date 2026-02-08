@@ -83,7 +83,7 @@ Window {
     World {
         id: physicsWorld
         anchors.fill: parent
-        gravity: Qt.point(0, -9.8)
+        gravity: Qt.point(0, 9.8)
         running: true
         
         // Static ground
@@ -137,7 +137,7 @@ Window {
 The main physics simulation container.
 
 **Properties:**
-- `gravity`: QPointF - World gravity (default: Qt.point(0, -10))
+- `gravity`: QPointF - World gravity in QML coordinates where positive Y is down (default: Qt.point(0, 10))
 - `running`: bool - Whether simulation is running (default: true)
 - `timeStep`: real - Time step for physics update in seconds (default: 1/60)
 - `velocityIterations`: int - Velocity solver iterations (default: 8)
