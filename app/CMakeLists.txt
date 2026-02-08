@@ -8,6 +8,8 @@ qt_add_qml_module(box2d_app
     QML_FILES
         qml/main.qml
         qml/MyWorld.qml
+    RESOURCES
+        qml/box.svg
 )
 
 target_link_libraries(box2d_app PRIVATE

@@ -2,8 +2,8 @@
 #include "qb2body.h"
 #include "qb2fixture.h"
 
-QB2World::QB2World(QObject *parent)
-    : QObject(parent)
+QB2World::QB2World(QQuickItem *parent)
+    : QQuickItem(parent)
 {
     b2WorldDef worldDef = b2DefaultWorldDef();
     worldDef.gravity = {m_gravity.x(), m_gravity.y()};

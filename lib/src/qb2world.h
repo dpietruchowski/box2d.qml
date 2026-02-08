@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QObject>
+#include <QQuickItem>
 #include <QVector2D>
 #include <QQmlListProperty>
 #include <QTimer>
@@ -8,7 +8,7 @@
 
 class QB2Body;
 
-class QB2World : public QObject
+class QB2World : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(QVector2D gravity READ gravity WRITE setGravity NOTIFY gravityChanged)
@@ -17,10 +17,9 @@ class QB2World : public QObject
     Q_PROPERTY(int velocityIterations READ velocityIterations WRITE setVelocityIterations NOTIFY velocityIterationsChanged)
     Q_PROPERTY(int positionIterations READ positionIterations WRITE setPositionIterations NOTIFY positionIterationsChanged)
     Q_PROPERTY(QQmlListProperty<QB2Body> bodies READ bodies)
-    Q_CLASSINFO("DefaultProperty", "bodies")
 
 public:
-    explicit QB2World(QObject *parent = nullptr);
+    explicit QB2World(QQuickItem *parent = nullptr);
     ~QB2World();
 
     QVector2D gravity() const;

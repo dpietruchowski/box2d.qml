@@ -7,12 +7,7 @@ Window {
     visible: true
     title: qsTr("Box2D QML")
 
-    Rectangle {
+    MyWorld {
         anchors.fill: parent
-        color: "#2b2b2b"
-
-        MyWorld {
-            anchors.fill: parent
-        }
     }
 }
