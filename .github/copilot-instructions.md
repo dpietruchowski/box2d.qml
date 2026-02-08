@@ -23,3 +23,5 @@ matrix. Fixed scaling issues. Added unit tests.
 1. Check `git diff` to see what changed
 2. Based on the diff, create appropriate commit message
 3. Commit with `git add -A && git commit -m "message"`
+
+**IMPORTANT**: Each line in the commit body MUST be 72 characters or less. Break long lines into multiple shorter lines.
