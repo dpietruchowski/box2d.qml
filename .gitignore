@@ -38,11 +38,8 @@ ui_*.h
 *.app
 
 # IDE
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
+.github/
 *.swp
 *.swo
 *~
