@@ -7,11 +7,13 @@ qt_add_qml_module(box2d_app
     VERSION 1.0
     QML_FILES
         qml/main.qml
+        qml/MyWorld.qml
 )
 
 target_link_libraries(box2d_app PRIVATE
     Qt6::Core
     Qt6::Quick
+    box2d_qml_lib
 )
 
 install(TARGETS box2d_app
