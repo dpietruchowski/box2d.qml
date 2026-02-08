@@ -159,6 +159,28 @@ void QB2Fixture::createShape()
     if (polygon)
     {
         m_shapeId = b2CreatePolygonShape(m_body->bodyId(), &shapeDef, polygon);
+    }
+
+    b2Circle *circle = m_shape->circle();
+    if (circle)
+    {
+        m_shapeId = b2CreateCircleShape(m_body->bodyId(), &shapeDef, circle);
+    }
+
+    b2Capsule *capsule = m_shape->capsule();
+    if (capsule)
+    {
+        m_shapeId = b2CreateCapsuleShape(m_body->bodyId(), &shapeDef, capsule);
+    }
+
+    b2Segment *segment = m_shape->segment();
+    if (segment)
+    {
+        m_shapeId = b2CreateSegmentShape(m_body->bodyId(), &shapeDef, segment);
+    }
+
+    if (b2Shape_IsValid(m_shapeId))
+    {
         b2Shape_SetFriction(m_shapeId, m_friction);
         b2Shape_SetRestitution(m_shapeId, m_restitution);
     }

@@ -75,6 +75,10 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2Body>("Box2D", 1, 0, "Body");
     qmlRegisterType<QB2Fixture>("Box2D", 1, 0, "Fixture");
     qmlRegisterType<QB2BoxShape>("Box2D", 1, 0, "BoxShape");
+    qmlRegisterType<QB2CircleShape>("Box2D", 1, 0, "CircleShape");
+    qmlRegisterType<QB2CapsuleShape>("Box2D", 1, 0, "CapsuleShape");
+    qmlRegisterType<QB2SegmentShape>("Box2D", 1, 0, "SegmentShape");
+    qmlRegisterType<QB2PolygonShape>("Box2D", 1, 0, "PolygonShape");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/App/qml/main.qml"_qs);
