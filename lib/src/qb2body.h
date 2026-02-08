@@ -69,6 +69,8 @@ signals:
 private:
     void createBody();
     void updateTransform();
+    void onXYChanged();
+    void updateBoundingBox();
 
     static void appendFixture(QQmlListProperty<QB2Fixture> *list, QB2Fixture *fixture);
     static qsizetype fixtureCount(QQmlListProperty<QB2Fixture> *list);
@@ -81,4 +83,5 @@ private:
     BodyType m_type = Dynamic;
     QList<QB2Fixture *> m_fixtures;
     bool m_componentComplete = false;
+    bool m_updatingTransform = false;
 };

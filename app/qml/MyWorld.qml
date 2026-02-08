@@ -20,6 +20,7 @@ Rectangle {
                 id: ground
                 type: Body.Static
                 position: Qt.vector2d(0, 300)
+                transformOrigin: Item.Center
                 
                 fixtures: [
                     Fixture {
@@ -32,10 +33,9 @@ Rectangle {
                 ]
                 
                 Rectangle {
-                    width: groundShape.width
-                    height: groundShape.height
-                    x: -width / 2
-                    y: -height / 2
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
                     color: "#555"
                     border.color: "white"
                     border.width: 1
@@ -46,6 +46,7 @@ Rectangle {
                 id: box
                 type: Body.Dynamic
                 position: Qt.vector2d(0, -200)
+                transformOrigin: Item.Center
                 
                 fixtures: [
                     Fixture {
@@ -59,12 +60,26 @@ Rectangle {
                 ]
                 
                 Image {
-                    width: boxShape.width
-                    height: boxShape.height
-                    x: -width / 2
-                    y: -height / 2
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
                     source: "box.svg"
                     sourceSize: Qt.size(width, height)
+                }
+                
+                MouseArea {
+                    anchors.fill: parent
+                    drag.target: parent
+                    
+                    onPressed: {
+                        console.log("Box pressed at:", mouse.x, mouse.y)
+                        box.type = Body.Kinematic
+                    }
+                    
+                    onReleased: {
+                        console.log("Box released, switching back to dynamic")
+                        box.type = Body.Dynamic
+                    }
                 }
             }
         }
