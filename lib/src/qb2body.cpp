@@ -2,10 +2,14 @@
 #include "qb2world.h"
 #include "qb2fixture.h"
 #include <QtMath>
+#include <QTimer>
+#include <limits>
 
 QB2Body::QB2Body(QQuickItem *parent)
     : QQuickItem(parent), m_bodyId(b2_nullBodyId)
 {
+    connect(this, &QQuickItem::xChanged, this, &QB2Body::onXYChanged);
+    connect(this, &QQuickItem::yChanged, this, &QB2Body::onXYChanged);
 }
 
 QB2Body::~QB2Body()
@@ -71,6 +75,9 @@ void QB2Body::createBody()
     updateTransform();
 
     emit bodyReady();
+
+    QTimer::singleShot(0, this, [this]()
+                       { updateBoundingBox(); });
 }
 
 QVector2D QB2Body::position() const
@@ -231,10 +238,70 @@ void QB2Body::updateTransform()
     if (!b2Body_IsValid(m_bodyId))
         return;
 
+    m_updatingTransform = true;
+
     b2Vec2 pos = b2Body_GetPosition(m_bodyId);
     qreal angle = b2Rot_GetAngle(b2Body_GetRotation(m_bodyId));
 
-    setX(pos.x);
-    setY(pos.y);
+    // Box2D position is center, QQuickItem x/y is top-left
+    // So we need to offset by half width/height
+    setX(pos.x - width() / 2.0);
+    setY(pos.y - height() / 2.0);
     setRotation(qRadiansToDegrees(angle));
+
+    m_updatingTransform = false;
+}
+
+void QB2Body::onXYChanged()
+{
+    if (!b2Body_IsValid(m_bodyId) || m_updatingTransform)
+        return;
+
+    // QQuickItem x/y is top-left, Box2D position is center
+    // So we need to add half width/height
+    QVector2D centerPos(x() + width() / 2.0, y() + height() / 2.0);
+    if (centerPos != m_position)
+    {
+        m_position = centerPos;
+        b2Rot rotation = b2Body_GetRotation(m_bodyId);
+        b2Body_SetTransform(m_bodyId, {centerPos.x(), centerPos.y()}, rotation);
+        emit positionChanged();
+    }
+}
+
+void QB2Body::updateBoundingBox()
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return;
+
+    int shapeCount = b2Body_GetShapeCount(m_bodyId);
+    if (shapeCount == 0)
+        return;
+
+    QVector<b2ShapeId> shapes(shapeCount);
+    b2Body_GetShapes(m_bodyId, shapes.data(), shapeCount);
+
+    qreal minX = std::numeric_limits<qreal>::max();
+    qreal minY = std::numeric_limits<qreal>::max();
+    qreal maxX = std::numeric_limits<qreal>::lowest();
+    qreal maxY = std::numeric_limits<qreal>::lowest();
+
+    for (int i = 0; i < shapeCount; ++i)
+    {
+        b2AABB aabb = b2Shape_GetAABB(shapes[i]);
+
+        minX = qMin(minX, static_cast<qreal>(aabb.lowerBound.x));
+        minY = qMin(minY, static_cast<qreal>(aabb.lowerBound.y));
+        maxX = qMax(maxX, static_cast<qreal>(aabb.upperBound.x));
+        maxY = qMax(maxY, static_cast<qreal>(aabb.upperBound.y));
+    }
+
+    qreal newWidth = maxX - minX;
+    qreal newHeight = maxY - minY;
+
+    if (newWidth > 0 && newHeight > 0)
+    {
+        setWidth(newWidth);
+        setHeight(newHeight);
+    }
 }
