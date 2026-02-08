@@ -1,13 +1,17 @@
 #include "qb2body.h"
 #include "qb2world.h"
 #include "qb2fixture.h"
+#include "qb2shape.h"
+#include <QPainter>
+#include <QPen>
 #include <QtMath>
 #include <QTimer>
 #include <limits>
 
 QB2Body::QB2Body(QQuickItem *parent)
-    : QQuickItem(parent), m_bodyId(b2_nullBodyId)
+    : QQuickPaintedItem(parent), m_bodyId(b2_nullBodyId)
 {
+    setAntialiasing(true);
     connect(this, &QQuickItem::xChanged, this, &QB2Body::onXYChanged);
     connect(this, &QQuickItem::yChanged, this, &QB2Body::onXYChanged);
 }
@@ -243,10 +247,15 @@ void QB2Body::updateTransform()
     b2Vec2 pos = b2Body_GetPosition(m_bodyId);
     qreal angle = b2Rot_GetAngle(b2Body_GetRotation(m_bodyId));
 
-    // Box2D position is center, QQuickItem x/y is top-left
-    // So we need to offset by half width/height
-    setX(pos.x - width() / 2.0);
-    setY(pos.y - height() / 2.0);
+    // Box2D position is centroid, QQuickItem x/y is top-left
+    // Centroid offset from bbox min corner is stored in properties
+    qreal bbOffsetX = property("_bbOffsetX").toReal();
+    qreal bbOffsetY = property("_bbOffsetY").toReal();
+
+    // Centroid position - bbox_min = top-left position
+    // Since bbox_min is negative offset, we need: pos - (-bbox_min) = pos + bbox_min
+    setX(pos.x + bbOffsetX);
+    setY(pos.y + bbOffsetY);
     setRotation(qRadiansToDegrees(angle));
 
     m_updatingTransform = false;
@@ -257,14 +266,17 @@ void QB2Body::onXYChanged()
     if (!b2Body_IsValid(m_bodyId) || m_updatingTransform)
         return;
 
-    // QQuickItem x/y is top-left, Box2D position is center
-    // So we need to add half width/height
-    QVector2D centerPos(x() + width() / 2.0, y() + height() / 2.0);
-    if (centerPos != m_position)
+    // QQuickItem x/y is top-left, Box2D position is centroid
+    // centroid = top-left - bbox_min
+    qreal bbOffsetX = property("_bbOffsetX").toReal();
+    qreal bbOffsetY = property("_bbOffsetY").toReal();
+
+    QVector2D centroidPos(x() - bbOffsetX, y() - bbOffsetY);
+    if (centroidPos != m_position)
     {
-        m_position = centerPos;
+        m_position = centroidPos;
         b2Rot rotation = b2Body_GetRotation(m_bodyId);
-        b2Body_SetTransform(m_bodyId, {centerPos.x(), centerPos.y()}, rotation);
+        b2Body_SetTransform(m_bodyId, {centroidPos.x(), centroidPos.y()}, rotation);
         emit positionChanged();
     }
 }
@@ -286,9 +298,42 @@ void QB2Body::updateBoundingBox()
     qreal maxX = std::numeric_limits<qreal>::lowest();
     qreal maxY = std::numeric_limits<qreal>::lowest();
 
+    b2Transform identity = {b2Vec2_zero, b2Rot_identity};
+
     for (int i = 0; i < shapeCount; ++i)
     {
-        b2AABB aabb = b2Shape_GetAABB(shapes[i]);
+        b2AABB aabb;
+        b2ShapeType shapeType = b2Shape_GetType(shapes[i]);
+
+        switch (shapeType)
+        {
+        case b2_circleShape:
+        {
+            b2Circle circle = b2Shape_GetCircle(shapes[i]);
+            aabb = b2ComputeCircleAABB(&circle, identity);
+            break;
+        }
+        case b2_capsuleShape:
+        {
+            b2Capsule capsule = b2Shape_GetCapsule(shapes[i]);
+            aabb = b2ComputeCapsuleAABB(&capsule, identity);
+            break;
+        }
+        case b2_segmentShape:
+        {
+            b2Segment segment = b2Shape_GetSegment(shapes[i]);
+            aabb = b2ComputeSegmentAABB(&segment, identity);
+            break;
+        }
+        case b2_polygonShape:
+        {
+            b2Polygon polygon = b2Shape_GetPolygon(shapes[i]);
+            aabb = b2ComputePolygonAABB(&polygon, identity);
+            break;
+        }
+        default:
+            continue;
+        }
 
         minX = qMin(minX, static_cast<qreal>(aabb.lowerBound.x));
         minY = qMin(minY, static_cast<qreal>(aabb.lowerBound.y));
@@ -301,7 +346,86 @@ void QB2Body::updateBoundingBox()
 
     if (newWidth > 0 && newHeight > 0)
     {
+        // Centroid is at (0,0) in shape-local coords
+        // Center of bbox is at ((minX+maxX)/2, (minY+maxY)/2)
+        // So centroid offset from bbox center is:
+        qreal centroidOffsetX = 0 - (minX + maxX) / 2.0;
+        qreal centroidOffsetY = 0 - (minY + maxY) / 2.0;
+
+        setProperty("_bbOffsetX", minX);
+        setProperty("_bbOffsetY", minY);
+        setProperty("_centroidOffsetX", centroidOffsetX);
+        setProperty("_centroidOffsetY", centroidOffsetY);
         setWidth(newWidth);
         setHeight(newHeight);
+
+        // Set transformOrigin to centroid position in item coordinates
+        // Centroid offset from top-left = -minX, -minY
+        setTransformOriginPoint(QPointF(-minX, -minY));
+    }
+}
+
+bool QB2Body::showBoundingBox() const
+{
+    return m_showBoundingBox;
+}
+
+void QB2Body::setShowBoundingBox(bool show)
+{
+    if (m_showBoundingBox == show)
+        return;
+    m_showBoundingBox = show;
+    update();
+    emit showBoundingBoxChanged();
+}
+
+bool QB2Body::showShape() const
+{
+    return m_showShape;
+}
+
+void QB2Body::setShowShape(bool show)
+{
+    if (m_showShape == show)
+        return;
+    m_showShape = show;
+    update();
+    emit showShapeChanged();
+}
+
+void QB2Body::paint(QPainter *painter)
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return;
+
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    if (m_showBoundingBox)
+    {
+        QPen bboxPen(Qt::red, 1);
+        painter->setPen(bboxPen);
+        painter->setBrush(Qt::NoBrush);
+        painter->drawRect(boundingRect());
+    }
+
+    if (m_showShape)
+    {
+        QPointF centroid = transformOriginPoint();
+
+        int shapeCount = b2Body_GetShapeCount(m_bodyId);
+        if (shapeCount == 0)
+            return;
+
+        QVector<b2ShapeId> shapes(shapeCount);
+        b2Body_GetShapes(m_bodyId, shapes.data(), shapeCount);
+
+        for (int i = 0; i < m_fixtures.count() && i < shapeCount; ++i)
+        {
+            QB2Shape *shape = m_fixtures[i]->shape();
+            if (shape && shape->renderingEnabled())
+            {
+                shape->paint(painter, centroid, shapes[i]);
+            }
+        }
     }
 }

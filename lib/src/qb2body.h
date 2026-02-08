@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QQuickItem>
+#include <QQuickPaintedItem>
 #include <QVector2D>
 #include <QQmlListProperty>
 #include <box2d/box2d.h>
@@ -8,7 +8,7 @@
 class QB2Fixture;
 class QB2World;
 
-class QB2Body : public QQuickItem
+class QB2Body : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QVector2D position READ position WRITE setPosition NOTIFY positionChanged)
@@ -17,6 +17,8 @@ class QB2Body : public QQuickItem
     Q_PROPERTY(qreal linearVelocityY READ linearVelocityY WRITE setLinearVelocityY NOTIFY linearVelocityYChanged)
     Q_PROPERTY(qreal angularVelocity READ angularVelocity WRITE setAngularVelocity NOTIFY angularVelocityChanged)
     Q_PROPERTY(BodyType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(bool showBoundingBox READ showBoundingBox WRITE setShowBoundingBox NOTIFY showBoundingBoxChanged)
+    Q_PROPERTY(bool showShape READ showShape WRITE setShowShape NOTIFY showShapeChanged)
     Q_PROPERTY(QQmlListProperty<QB2Fixture> fixtures READ fixtures)
 
 public:
@@ -49,6 +51,14 @@ public:
     BodyType type() const;
     void setType(BodyType type);
 
+    bool showBoundingBox() const;
+    void setShowBoundingBox(bool show);
+
+    bool showShape() const;
+    void setShowShape(bool show);
+
+    void paint(QPainter *painter) override;
+
     QQmlListProperty<QB2Fixture> fixtures();
 
     b2BodyId bodyId() const { return m_bodyId; }
@@ -65,6 +75,8 @@ signals:
     void angularVelocityChanged();
     void typeChanged();
     void bodyReady();
+    void showBoundingBoxChanged();
+    void showShapeChanged();
 
 private:
     void createBody();
@@ -84,4 +96,6 @@ private:
     QList<QB2Fixture *> m_fixtures;
     bool m_componentComplete = false;
     bool m_updatingTransform = false;
+    bool m_showBoundingBox = false;
+    bool m_showShape = true;
 };
