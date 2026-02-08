@@ -19,32 +19,47 @@ A Qt/QML wrapper for the Box2D physics engine, allowing you to easily integrate 
 ### Prerequisites
 
 - Qt 5.15+ or Qt 6.x with Qml and Quick modules
-- CMake 3.16+
+- CMake 3.16+ (for CMake build) or qmake (for qmake build)
 - C++17 compatible compiler
-- Box2D library (bundled or system-installed)
+- Box2D library (will be downloaded automatically if not found)
 
-### Build Instructions
+### Build with CMake (Recommended)
 
 ```bash
 # Clone the repository
 git clone https://github.com/dpietruchowski/box2d.qml.git
 cd box2d.qml
 
-# Create build directory
+# Option 1: Use the build script
+./build.sh
+
+# Option 2: Manual build
 mkdir build && cd build
-
-# Configure with CMake
 cmake ..
-
-# Build
 cmake --build .
 
 # Install (optional)
 sudo cmake --install .
 ```
 
+### Build with qmake
+
+```bash
+# Clone the repository
+git clone https://github.com/dpietruchowski/box2d.qml.git
+cd box2d.qml
+
+# Build
+qmake
+make
+
+# Install (optional)
+sudo make install
+```
+
 ### Build Options
 
+**CMake:**
 - `BUILD_EXAMPLES`: Build example applications (default: ON)
 
 ```bash
