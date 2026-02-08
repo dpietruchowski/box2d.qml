@@ -1,9 +1,10 @@
 #include "qb2body.h"
 #include "qb2world.h"
 #include "qb2fixture.h"
+#include <QtMath>
 
-QB2Body::QB2Body(QObject *parent)
-    : QObject(parent), m_bodyId(b2_nullBodyId)
+QB2Body::QB2Body(QQuickItem *parent)
+    : QQuickItem(parent), m_bodyId(b2_nullBodyId)
 {
 }
 
@@ -26,11 +27,12 @@ void QB2Body::classBegin()
 
 void QB2Body::componentComplete()
 {
+    QQuickItem::componentComplete();
     m_componentComplete = true;
 
     if (!m_world)
     {
-        m_world = qobject_cast<QB2World *>(parent());
+        m_world = qobject_cast<QB2World *>(parentItem());
     }
 
     if (!m_world)
@@ -64,6 +66,10 @@ void QB2Body::createBody()
     bodyDef.type = static_cast<b2BodyType>(m_type);
     bodyDef.position = {m_position.x(), m_position.y()};
     m_bodyId = b2CreateBody(m_world->worldId(), &bodyDef);
+
+    connect(m_world, &QB2World::stepped, this, &QB2Body::updateTransform);
+    updateTransform();
+
     emit bodyReady();
 }
 
@@ -88,46 +94,6 @@ void QB2Body::setPosition(const QVector2D &position)
         b2Body_SetTransform(m_bodyId, {position.x(), position.y()}, rotation);
     }
     emit positionChanged();
-    emit xChanged();
-    emit yChanged();
-}
-
-qreal QB2Body::x() const
-{
-    if (b2Body_IsValid(m_bodyId))
-    {
-        b2Vec2 pos = b2Body_GetPosition(m_bodyId);
-        return pos.x;
-    }
-    return m_position.x();
-}
-
-void QB2Body::setX(qreal x)
-{
-    QVector2D pos = position();
-    if (qFuzzyCompare(pos.x(), static_cast<float>(x)))
-        return;
-    pos.setX(x);
-    setPosition(pos);
-}
-
-qreal QB2Body::y() const
-{
-    if (b2Body_IsValid(m_bodyId))
-    {
-        b2Vec2 pos = b2Body_GetPosition(m_bodyId);
-        return pos.y;
-    }
-    return m_position.y();
-}
-
-void QB2Body::setY(qreal y)
-{
-    QVector2D pos = position();
-    if (qFuzzyCompare(pos.y(), static_cast<float>(y)))
-        return;
-    pos.setY(y);
-    setPosition(pos);
 }
 
 qreal QB2Body::angle() const
@@ -258,4 +224,17 @@ void QB2Body::clearFixtures(QQmlListProperty<QB2Fixture> *list)
     QB2Body *body = qobject_cast<QB2Body *>(list->object);
     if (body)
         body->m_fixtures.clear();
+}
+
+void QB2Body::updateTransform()
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return;
+
+    b2Vec2 pos = b2Body_GetPosition(m_bodyId);
+    qreal angle = b2Rot_GetAngle(b2Body_GetRotation(m_bodyId));
+
+    setX(pos.x);
+    setY(pos.y);
+    setRotation(qRadiansToDegrees(angle));
 }

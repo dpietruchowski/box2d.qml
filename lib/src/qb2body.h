@@ -1,28 +1,23 @@
 #pragma once
 
-#include <QObject>
+#include <QQuickItem>
 #include <QVector2D>
 #include <QQmlListProperty>
-#include <QQmlParserStatus>
 #include <box2d/box2d.h>
 
 class QB2Fixture;
 class QB2World;
 
-class QB2Body : public QObject, public QQmlParserStatus
+class QB2Body : public QQuickItem
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QVector2D position READ position WRITE setPosition NOTIFY positionChanged)
-    Q_PROPERTY(qreal x READ x WRITE setX NOTIFY xChanged)
-    Q_PROPERTY(qreal y READ y WRITE setY NOTIFY yChanged)
     Q_PROPERTY(qreal angle READ angle WRITE setAngle NOTIFY angleChanged)
     Q_PROPERTY(qreal linearVelocityX READ linearVelocityX WRITE setLinearVelocityX NOTIFY linearVelocityXChanged)
     Q_PROPERTY(qreal linearVelocityY READ linearVelocityY WRITE setLinearVelocityY NOTIFY linearVelocityYChanged)
     Q_PROPERTY(qreal angularVelocity READ angularVelocity WRITE setAngularVelocity NOTIFY angularVelocityChanged)
     Q_PROPERTY(BodyType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QQmlListProperty<QB2Fixture> fixtures READ fixtures)
-    Q_CLASSINFO("DefaultProperty", "fixtures")
 
 public:
     enum BodyType
@@ -33,17 +28,11 @@ public:
     };
     Q_ENUM(BodyType)
 
-    explicit QB2Body(QObject *parent = nullptr);
+    explicit QB2Body(QQuickItem *parent = nullptr);
     ~QB2Body();
 
     QVector2D position() const;
     void setPosition(const QVector2D &position);
-
-    qreal x() const;
-    void setX(qreal x);
-
-    qreal y() const;
-    void setY(qreal y);
 
     qreal angle() const;
     void setAngle(qreal angle);
@@ -70,8 +59,6 @@ public:
 
 signals:
     void positionChanged();
-    void xChanged();
-    void yChanged();
     void angleChanged();
     void linearVelocityXChanged();
     void linearVelocityYChanged();
@@ -81,6 +68,7 @@ signals:
 
 private:
     void createBody();
+    void updateTransform();
 
     static void appendFixture(QQmlListProperty<QB2Fixture> *list, QB2Fixture *fixture);
     static qsizetype fixtureCount(QQmlListProperty<QB2Fixture> *list);

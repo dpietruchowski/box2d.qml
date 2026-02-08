@@ -4,7 +4,6 @@
 #include <qb2body.h>
 #include <qb2fixture.h>
 #include <qb2shape.h>
-#include <qb2scene.h>
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +14,6 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2Body>("Box2D", 1, 0, "Body");
     qmlRegisterType<QB2Fixture>("Box2D", 1, 0, "Fixture");
     qmlRegisterType<QB2BoxShape>("Box2D", 1, 0, "BoxShape");
-    qmlRegisterType<QB2Scene>("Box2D", 1, 0, "Scene");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/App/qml/main.qml"_qs);
