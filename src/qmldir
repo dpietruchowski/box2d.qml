@@ -1,0 +1,4 @@
+module Box2D
+plugin Box2DQml
+classname Box2DPlugin
+typeinfo plugins.qmltypes
