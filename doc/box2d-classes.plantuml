@@ -1,0 +1,187 @@
+@startuml Box2D
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor<<World>> LightBlue
+    BackgroundColor<<Body>> LightGreen
+    BackgroundColor<<Shape>> LightYellow
+    BackgroundColor<<Joint>> LightCoral
+}
+
+class b2World <<World>> {
+    +CreateBody(def: b2BodyDef*): b2Body*
+    +DestroyBody(body: b2Body*)
+    +CreateJoint(def: b2JointDef*): b2Joint*
+    +DestroyJoint(joint: b2Joint*)
+    +Step(timeStep, velocityIterations, positionIterations)
+    +SetGravity(gravity: b2Vec2)
+    +GetGravity(): b2Vec2
+}
+
+class b2Body <<Body>> {
+    +CreateFixture(def: b2FixtureDef*): b2Fixture*
+    +DestroyFixture(fixture: b2Fixture*)
+    +SetTransform(position: b2Vec2, angle: float)
+    +GetPosition(): b2Vec2
+    +GetAngle(): float
+    +SetLinearVelocity(v: b2Vec2)
+    +GetLinearVelocity(): b2Vec2
+    +ApplyForce(force: b2Vec2, point: b2Vec2)
+    +ApplyImpulse(impulse: b2Vec2, point: b2Vec2)
+    -type: b2BodyType
+}
+
+enum b2BodyType {
+    b2_staticBody
+    b2_kinematicBody
+    b2_dynamicBody
+}
+
+class b2Fixture {
+    +GetShape(): b2Shape*
+    +GetBody(): b2Body*
+    +SetDensity(density: float)
+    +GetDensity(): float
+    +SetFriction(friction: float)
+    +SetRestitution(restitution: float)
+    +IsSensor(): bool
+}
+
+abstract class b2Shape <<Shape>> {
+    +GetType(): Type
+    +GetChildCount(): int
+    +TestPoint(xf: b2Transform, p: b2Vec2): bool
+    #m_radius: float
+    #m_type: Type
+}
+
+class b2CircleShape <<Shape>> {
+    +m_p: b2Vec2
+}
+
+class b2PolygonShape <<Shape>> {
+    +SetAsBox(hx: float, hy: float)
+    +Set(vertices: b2Vec2*, count: int)
+    -m_vertices[]: b2Vec2
+    -m_count: int
+}
+
+class b2EdgeShape <<Shape>> {
+    +SetTwoSided(v1: b2Vec2, v2: b2Vec2)
+    +SetOneSided(v0: b2Vec2, v1: b2Vec2, v2: b2Vec2, v3: b2Vec2)
+    +m_vertex1: b2Vec2
+    +m_vertex2: b2Vec2
+}
+
+class b2ChainShape <<Shape>> {
+    +CreateLoop(vertices: b2Vec2*, count: int)
+    +CreateChain(vertices: b2Vec2*, count: int)
+    -m_vertices: b2Vec2*
+    -m_count: int
+}
+
+abstract class b2Joint <<Joint>> {
+    +GetType(): b2JointType
+    +GetBodyA(): b2Body*
+    +GetBodyB(): b2Body*
+    +GetAnchorA(): b2Vec2
+    +GetAnchorB(): b2Vec2
+    #m_type: b2JointType
+}
+
+class b2RevoluteJoint <<Joint>> {
+    +GetJointAngle(): float
+    +GetJointSpeed(): float
+    +EnableMotor(flag: bool)
+    +SetMotorSpeed(speed: float)
+    +SetMaxMotorTorque(torque: float)
+    +EnableLimit(flag: bool)
+    +SetLimits(lower: float, upper: float)
+}
+
+class b2DistanceJoint <<Joint>> {
+    +GetLength(): float
+    +SetLength(length: float)
+    +GetMinLength(): float
+    +SetMinLength(minLength: float)
+    +GetMaxLength(): float
+    +SetMaxLength(maxLength: float)
+}
+
+class b2PrismaticJoint <<Joint>> {
+    +GetJointTranslation(): float
+    +GetJointSpeed(): float
+    +EnableMotor(flag: bool)
+    +SetMotorSpeed(speed: float)
+    +EnableLimit(flag: bool)
+    +SetLimits(lower: float, upper: float)
+}
+
+class b2WeldJoint <<Joint>> {
+    +SetStiffness(stiffness: float)
+    +SetDamping(damping: float)
+}
+
+class b2Contact {
+    +GetFixtureA(): b2Fixture*
+    +GetFixtureB(): b2Fixture*
+    +IsTouching(): bool
+    +SetEnabled(flag: bool)
+}
+
+' Relationships
+b2World "1" *-- "*" b2Body : manages
+b2World "1" *-- "*" b2Joint : manages
+b2World "1" *-- "*" b2Contact : manages
+
+b2Body "1" *-- "*" b2Fixture : has
+b2Body --> b2BodyType : uses
+
+b2Fixture "*" --> "1" b2Shape : references
+b2Fixture "*" --> "1" b2Body : belongs to
+
+b2Shape <|-- b2CircleShape
+b2Shape <|-- b2PolygonShape
+b2Shape <|-- b2EdgeShape
+b2Shape <|-- b2ChainShape
+
+b2Joint <|-- b2RevoluteJoint
+b2Joint <|-- b2DistanceJoint
+b2Joint <|-- b2PrismaticJoint
+b2Joint <|-- b2WeldJoint
+
+b2Joint "1" --> "2" b2Body : connects
+
+b2Contact "*" --> "2" b2Fixture : between
+
+note right of b2World
+  Main simulation container.
+  Manages all bodies, joints,
+  and collision detection.
+end note
+
+note right of b2Body
+  Physical object in world.
+  Can be static, kinematic,
+  or dynamic.
+end note
+
+note right of b2Fixture
+  Attaches shape to body.
+  Defines physical properties:
+  density, friction, restitution.
+end note
+
+note right of b2Shape
+  Abstract shape class.
+  Defines geometry for
+  collision detection.
+end note
+
+note right of b2Joint
+  Constrains bodies together.
+  Multiple joint types available
+  for different constraints.
+end note
+
+@enduml
