@@ -1,0 +1,82 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Build Box2D App",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "echo",
+            "runtimeArgs": [
+                "Build completed"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake: Build"
+        },
+        {
+            "name": "Run Box2D App",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/Desktop-Debug/app/box2d_app",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "preLaunchTask": "Build and Kill Previous",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "resolveSourceMapLocations": [],
+            "env": {
+                "LD_LIBRARY_PATH": "${workspaceFolder}/build/Desktop-Debug/lib:${workspaceFolder}/build/Desktop-Debug/third_party/box2d/src",
+                "QT_QPA_PLATFORM": "xcb"
+            }
+        },
+        {
+            "name": "Debug Box2D App",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Desktop-Debug/app/box2d_app",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "${workspaceFolder}/build/Desktop-Debug/lib:${workspaceFolder}/build/Desktop-Debug/third_party/box2d/src"
+                },
+                {
+                    "name": "QT_QPA_PLATFORM",
+                    "value": "xcb"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "CMake: Build"
+        },
+        {
+            "name": "Run Box2D App (Release)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/Desktop-Release/app/box2d_app",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake: Build Release",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "resolveSourceMapLocations": [],
+            "env": {
+                "LD_LIBRARY_PATH": "${workspaceFolder}/build/Desktop-Release/lib:${workspaceFolder}/build/Desktop-Release/third_party/box2d/src",
+                "QT_QPA_PLATFORM": "xcb"
+            }
+        }
+    ]
+}
