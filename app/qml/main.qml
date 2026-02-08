@@ -5,17 +5,14 @@ Window {
     width: 800
     height: 600
     visible: true
-    title: qsTr("Box2D QML - Hello World")
+    title: qsTr("Box2D QML")
 
     Rectangle {
         anchors.fill: parent
         color: "#2b2b2b"
 
-        Text {
-            anchors.centerIn: parent
-            text: "Hello World!"
-            font.pixelSize: 48
-            color: "white"
+        MyWorld {
+            anchors.fill: parent
         }
     }
 }

@@ -9,8 +9,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 
 qt_standard_project_setup()
 
-# Add Box2D
 add_subdirectory(third_party/box2d)
 
-# Add app
+add_subdirectory(lib)
 add_subdirectory(app)
