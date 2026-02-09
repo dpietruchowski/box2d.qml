@@ -40,7 +40,17 @@ void QB2Body::componentComplete()
 
     if (!m_world)
     {
-        m_world = qobject_cast<QB2World *>(parentItem());
+        // Auto-find World in parent hierarchy
+        QQuickItem *item = parentItem();
+        while (item)
+        {
+            if (auto *world = qobject_cast<QB2World *>(item))
+            {
+                m_world = world;
+                break;
+            }
+            item = item->parentItem();
+        }
     }
 
     if (!m_world)

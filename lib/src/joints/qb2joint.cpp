@@ -55,16 +55,17 @@ void QB2Joint::componentComplete()
 
     if (!m_world)
     {
-        QB2World *world = nullptr;
-        QObject *p = parent();
-        while (p)
+        // Auto-find World in parent hierarchy
+        QObject *obj = parent();
+        while (obj)
         {
-            world = qobject_cast<QB2World *>(p);
-            if (world)
+            if (auto *world = qobject_cast<QB2World *>(obj))
+            {
+                m_world = world;
                 break;
-            p = p->parent();
+            }
+            obj = obj->parent();
         }
-        m_world = world;
     }
 
     if (!m_world)

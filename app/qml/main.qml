@@ -7,7 +7,7 @@ Window {
     visible: true
     title: qsTr("Box2D QML")
 
-    MyWorld {
+    CarDemo {
         anchors.fill: parent
     }
 }
