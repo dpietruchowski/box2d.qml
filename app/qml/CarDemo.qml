@@ -13,13 +13,14 @@ Rectangle {
             id: physics
             x: parent.width / 2
             y: parent.height / 2
-            gravity: Qt.vector2d(0, 9.8)
+            gravity: Qt.vector2d(0, -9.8)
             running: true
+            transform: Scale { yScale: -1 }
 
             Body {
                 id: ground
                 type: Body.Static
-                position: Qt.vector2d(0, 200)
+                position: Qt.vector2d(0, -200)
                 transformOrigin: Item.Center
                 
                 fixtures: [
@@ -39,7 +40,18 @@ Rectangle {
             
             Car {
                 carX: 0
-                carY: 150
+                carY: -188
+                motorSpeed: -20.0
+            }
+            Car {
+                carX: 0
+                carY: -188
+                motorSpeed: -20.0
+            }
+            Car {
+                carX: 0
+                carY: -188
+                motorSpeed: -20.0
             }
         }
     }

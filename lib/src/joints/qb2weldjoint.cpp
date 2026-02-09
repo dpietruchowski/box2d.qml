@@ -105,5 +105,6 @@ void QB2WeldJoint::createJoint()
     jointDef.angularDampingRatio = m_angularDampingRatio;
 
     m_jointId = b2CreateWeldJoint(m_world->worldId(), &jointDef);
+    b2Joint_WakeBodies(m_jointId);
     emit jointReady();
 }
