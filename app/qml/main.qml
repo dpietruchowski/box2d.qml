@@ -7,7 +7,7 @@ Window {
     visible: true
     title: qsTr("Box2D QML")
 
-    FilterJointDemo {
+    MyWorld {
         anchors.fill: parent
     }
 }

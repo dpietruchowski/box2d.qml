@@ -8,8 +8,6 @@ qt_add_qml_module(box2d_app
     QML_FILES
         qml/main.qml
         qml/MyWorld.qml
-        qml/FilterJointDemo.qml
-        qml/MotorJointDemo.qml
     RESOURCES
         qml/box.svg
 )

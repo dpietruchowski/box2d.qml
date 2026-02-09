@@ -16,6 +16,8 @@ class QB2Body : public QQuickPaintedItem
     Q_PROPERTY(qreal linearVelocityX READ linearVelocityX WRITE setLinearVelocityX NOTIFY linearVelocityXChanged)
     Q_PROPERTY(qreal linearVelocityY READ linearVelocityY WRITE setLinearVelocityY NOTIFY linearVelocityYChanged)
     Q_PROPERTY(qreal angularVelocity READ angularVelocity WRITE setAngularVelocity NOTIFY angularVelocityChanged)
+    Q_PROPERTY(qreal linearDamping READ linearDamping WRITE setLinearDamping NOTIFY linearDampingChanged)
+    Q_PROPERTY(qreal angularDamping READ angularDamping WRITE setAngularDamping NOTIFY angularDampingChanged)
     Q_PROPERTY(BodyType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(bool showBoundingBox READ showBoundingBox WRITE setShowBoundingBox NOTIFY showBoundingBoxChanged)
     Q_PROPERTY(bool showShape READ showShape WRITE setShowShape NOTIFY showShapeChanged)
@@ -48,6 +50,12 @@ public:
     qreal angularVelocity() const;
     void setAngularVelocity(qreal omega);
 
+    qreal linearDamping() const;
+    void setLinearDamping(qreal damping);
+
+    qreal angularDamping() const;
+    void setAngularDamping(qreal damping);
+
     BodyType type() const;
     void setType(BodyType type);
 
@@ -73,6 +81,8 @@ signals:
     void linearVelocityXChanged();
     void linearVelocityYChanged();
     void angularVelocityChanged();
+    void linearDampingChanged();
+    void angularDampingChanged();
     void typeChanged();
     void bodyReady();
     void showBoundingBoxChanged();
