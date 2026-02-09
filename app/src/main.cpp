@@ -13,6 +13,8 @@
 #include <shapes/qb2capsuleshape.h>
 #include <shapes/qb2segmentshape.h>
 #include <shapes/qb2polygonshape.h>
+#include <shapes/qb2chainshape.h>
+#include <qb2chain.h>
 #include <joints/qb2joint.h>
 #include <joints/qb2revolutejoint.h>
 #include <joints/qb2distancejoint.h>
@@ -91,6 +93,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2CapsuleShape>("Box2D", 1, 0, "CapsuleShape");
     qmlRegisterType<QB2SegmentShape>("Box2D", 1, 0, "SegmentShape");
     qmlRegisterType<QB2PolygonShape>("Box2D", 1, 0, "PolygonShape");
+    qmlRegisterType<QB2Chain>("Box2D", 1, 0, "Chain");
     qmlRegisterType<QB2RevoluteJoint>("Box2D", 1, 0, "RevoluteJoint");
     qmlRegisterType<QB2DistanceJoint>("Box2D", 1, 0, "DistanceJoint");
     qmlRegisterType<QB2PrismaticJoint>("Box2D", 1, 0, "PrismaticJoint");

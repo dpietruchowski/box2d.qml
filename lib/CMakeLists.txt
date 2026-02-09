@@ -13,10 +13,14 @@ qt_add_library(box2d_qml_lib STATIC
     src/shapes/qb2segmentshape.cpp
     src/shapes/qb2polygonshape.h
     src/shapes/qb2polygonshape.cpp
+    src/shapes/qb2chainshape.h
+    src/shapes/qb2chainshape.cpp
     src/qb2fixture.h
     src/qb2fixture.cpp
     src/qb2body.h
     src/qb2body.cpp
+    src/qb2chain.h
+    src/qb2chain.cpp
     src/joints/qb2joint.h
     src/joints/qb2joint.cpp
     src/joints/qb2revolutejoint.h
