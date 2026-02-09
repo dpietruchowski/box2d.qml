@@ -7,8 +7,15 @@
 #include <qb2world.h>
 #include <qb2body.h>
 #include <qb2fixture.h>
-#include <qb2shape.h>
-#include <qb2joint.h>
+#include <shapes/qb2shape.h>
+#include <shapes/qb2boxshape.h>
+#include <shapes/qb2circleshape.h>
+#include <shapes/qb2capsuleshape.h>
+#include <shapes/qb2segmentshape.h>
+#include <shapes/qb2polygonshape.h>
+#include <joints/qb2joint.h>
+#include <joints/qb2revolutejoint.h>
+#include <joints/qb2distancejoint.h>
 
 static QFile *logFile = nullptr;
 static QMutex logMutex;

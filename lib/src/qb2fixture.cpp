@@ -1,5 +1,5 @@
 #include "qb2fixture.h"
-#include "qb2shape.h"
+#include "shapes/qb2shape.h"
 #include "qb2body.h"
 
 QB2Fixture::QB2Fixture(QObject *parent)
