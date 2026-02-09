@@ -33,6 +33,8 @@ qt_add_library(box2d_qml_lib STATIC
     src/joints/qb2weldjoint.cpp
     src/joints/qb2wheeljoint.h
     src/joints/qb2wheeljoint.cpp
+    src/joints/qb2motorjoint.h
+    src/joints/qb2motorjoint.cpp
 )
 
 target_include_directories(box2d_qml_lib PUBLIC

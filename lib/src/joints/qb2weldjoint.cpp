@@ -87,10 +87,10 @@ void QB2WeldJoint::createJoint()
         return;
 
     b2WeldJointDef jointDef = b2DefaultWeldJointDef();
-    
+
     b2Vec2 localAnchorA = {static_cast<float>(m_localAnchorA.x()), static_cast<float>(m_localAnchorA.y())};
     b2Vec2 localAnchorB = {static_cast<float>(m_localAnchorB.x()), static_cast<float>(m_localAnchorB.y())};
-    
+
     jointDef.base.bodyIdA = m_bodyA->bodyId();
     jointDef.base.bodyIdB = m_bodyB->bodyId();
     jointDef.base.localFrameA.p = localAnchorA;
@@ -98,7 +98,7 @@ void QB2WeldJoint::createJoint()
     jointDef.base.localFrameB.p = localAnchorB;
     jointDef.base.localFrameB.q = b2Rot_identity;
     jointDef.base.collideConnected = m_collideConnected;
-    
+
     jointDef.linearHertz = m_linearHertz;
     jointDef.linearDampingRatio = m_linearDampingRatio;
     jointDef.angularHertz = m_angularHertz;

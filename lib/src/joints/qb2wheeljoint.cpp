@@ -138,13 +138,13 @@ void QB2WheelJoint::createJoint()
         return;
 
     b2WheelJointDef jointDef = b2DefaultWheelJointDef();
-    
+
     b2Vec2 localAnchorA = {static_cast<float>(m_localAnchorA.x()), static_cast<float>(m_localAnchorA.y())};
     b2Vec2 localAnchorB = {static_cast<float>(m_localAnchorB.x()), static_cast<float>(m_localAnchorB.y())};
-    
+
     float angle = std::atan2(static_cast<float>(m_localAxisA.y()), static_cast<float>(m_localAxisA.x()));
     b2Rot axisRotation = b2MakeRot(angle);
-    
+
     jointDef.base.bodyIdA = m_bodyA->bodyId();
     jointDef.base.bodyIdB = m_bodyB->bodyId();
     jointDef.base.localFrameA.p = localAnchorA;
@@ -152,7 +152,7 @@ void QB2WheelJoint::createJoint()
     jointDef.base.localFrameB.p = localAnchorB;
     jointDef.base.localFrameB.q = b2Rot_identity;
     jointDef.base.collideConnected = m_collideConnected;
-    
+
     jointDef.enableSpring = m_enableSpring;
     jointDef.hertz = m_hertz;
     jointDef.dampingRatio = m_dampingRatio;

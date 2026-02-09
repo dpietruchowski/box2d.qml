@@ -116,13 +116,13 @@ void QB2PrismaticJoint::createJoint()
         return;
 
     b2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
-    
+
     b2Vec2 localAnchorA = {static_cast<float>(m_localAnchorA.x()), static_cast<float>(m_localAnchorA.y())};
     b2Vec2 localAnchorB = {static_cast<float>(m_localAnchorB.x()), static_cast<float>(m_localAnchorB.y())};
-    
+
     float angle = std::atan2(static_cast<float>(m_localAxisA.y()), static_cast<float>(m_localAxisA.x()));
     b2Rot axisRotation = b2MakeRot(angle);
-    
+
     jointDef.base.bodyIdA = m_bodyA->bodyId();
     jointDef.base.bodyIdB = m_bodyB->bodyId();
     jointDef.base.localFrameA.p = localAnchorA;
@@ -130,7 +130,7 @@ void QB2PrismaticJoint::createJoint()
     jointDef.base.localFrameB.p = localAnchorB;
     jointDef.base.localFrameB.q = b2Rot_identity;
     jointDef.base.collideConnected = m_collideConnected;
-    
+
     jointDef.enableSpring = false;
     jointDef.enableLimit = m_enableLimit;
     jointDef.lowerTranslation = m_lowerTranslation;
