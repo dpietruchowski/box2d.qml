@@ -18,12 +18,14 @@ Rectangle {
             type: Body.StaticBody
             position: Qt.point(400, 550)
 
-            Fixture {
-                BoxShape {
-                    width: 800
-                    height: 20
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 800
+                        height: 20
+                    }
                 }
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent
@@ -39,14 +41,16 @@ Rectangle {
             position: Qt.point(400, 300)
             angularDamping: 0.5
 
-            Fixture {
-                BoxShape {
-                    width: 200
-                    height: 20
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 200
+                        height: 20
+                    }
+                    density: 1.0
+                    friction: 0.3
                 }
-                density: 1.0
-                friction: 0.3
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent
@@ -63,14 +67,16 @@ Rectangle {
             type: Body.DynamicBody
             position: Qt.point(400, 100)
 
-            Fixture {
-                BoxShape {
-                    width: 50
-                    height: 50
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 50
+                        height: 50
+                    }
+                    density: 1.0
+                    friction: 0.5
                 }
-                density: 1.0
-                friction: 0.5
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent

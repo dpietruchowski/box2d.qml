@@ -18,12 +18,14 @@ Rectangle {
             type: Body.StaticBody
             position: Qt.point(400, 550)
 
-            Fixture {
-                BoxShape {
-                    width: 800
-                    height: 20
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 800
+                        height: 20
+                    }
                 }
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent
@@ -38,14 +40,16 @@ Rectangle {
             type: Body.DynamicBody
             position: Qt.point(300, 100)
 
-            Fixture {
-                BoxShape {
-                    width: 60
-                    height: 60
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 60
+                        height: 60
+                    }
+                    density: 1.0
+                    friction: 0.3
                 }
-                density: 1.0
-                friction: 0.3
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent
@@ -69,14 +73,16 @@ Rectangle {
             type: Body.DynamicBody
             position: Qt.point(500, 100)
 
-            Fixture {
-                BoxShape {
-                    width: 60
-                    height: 60
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 60
+                        height: 60
+                    }
+                    density: 1.0
+                    friction: 0.3
                 }
-                density: 1.0
-                friction: 0.3
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent
@@ -100,14 +106,16 @@ Rectangle {
             type: Body.DynamicBody
             position: Qt.point(400, 200)
 
-            Fixture {
-                BoxShape {
-                    width: 60
-                    height: 60
+            fixtures: [
+                Fixture {
+                    shape: BoxShape {
+                        width: 60
+                        height: 60
+                    }
+                    density: 1.0
+                    friction: 0.3
                 }
-                density: 1.0
-                friction: 0.3
-            }
+            ]
 
             Rectangle {
                 anchors.centerIn: parent
