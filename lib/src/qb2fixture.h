@@ -6,7 +6,7 @@
 
 class QB2Body;
 
-#include "qb2shape.h"
+#include "shapes/qb2shape.h"
 
 class QB2Fixture : public QObject, public QQmlParserStatus
 {

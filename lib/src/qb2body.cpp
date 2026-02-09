@@ -1,7 +1,7 @@
 #include "qb2body.h"
 #include "qb2world.h"
 #include "qb2fixture.h"
-#include "qb2shape.h"
+#include "shapes/qb2shape.h"
 #include <QPainter>
 #include <QPen>
 #include <QtMath>
