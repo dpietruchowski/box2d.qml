@@ -17,6 +17,37 @@ Rectangle {
             running: true
             transform: Scale { yScale: -1 }
 
+            // X axis (red)
+            Rectangle {
+                x: -400
+                y: 0
+                width: 800
+                height: 2
+                color: "red"
+                opacity: 0.5
+            }
+            
+            // Y axis (green)
+            Rectangle {
+                x: 0
+                y: -300
+                width: 2
+                height: 600
+                color: "green"
+                opacity: 0.5
+            }
+            
+            // Origin marker
+            Rectangle {
+                x: -5
+                y: -5
+                width: 10
+                height: 10
+                color: "yellow"
+                radius: 5
+                opacity: 0.7
+            }
+
             Body {
                 id: ground
                 type: Body.Static
@@ -40,13 +71,13 @@ Rectangle {
             
             Car {
                 carX: 0
-                carY: -188
+                carY: 0
                 motorSpeed: -20.0
             }
             Car {
-                carX: 0
+                carX: -200
                 carY: -188
-                motorSpeed: -20.0
+                motorSpeed: -50.0
             }
             Car {
                 carX: 0
