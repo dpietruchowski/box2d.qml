@@ -22,6 +22,7 @@
 #include <joints/qb2weldjoint.h>
 #include <joints/qb2wheeljoint.h>
 #include <joints/qb2motorjoint.h>
+#include <joints/qb2filterjoint.h>
 
 static QFile *logFile = nullptr;
 static QMutex logMutex;
@@ -101,6 +102,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2WeldJoint>("Box2D", 1, 0, "WeldJoint");
     qmlRegisterType<QB2WheelJoint>("Box2D", 1, 0, "WheelJoint");
     qmlRegisterType<QB2MotorJoint>("Box2D", 1, 0, "MotorJoint");
+    qmlRegisterType<QB2FilterJoint>("Box2D", 1, 0, "FilterJoint");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/App/qml/main.qml"_qs);
