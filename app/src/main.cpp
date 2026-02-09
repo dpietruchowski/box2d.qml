@@ -8,6 +8,7 @@
 #include <qb2body.h>
 #include <qb2fixture.h>
 #include <qb2shape.h>
+#include <qb2joint.h>
 
 static QFile *logFile = nullptr;
 static QMutex logMutex;
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterUncreatableType<QB2Shape>("Box2D", 1, 0, "Shape", "Shape is abstract");
+    qmlRegisterUncreatableType<QB2Joint>("Box2D", 1, 0, "Joint", "Joint is abstract");
     qmlRegisterType<QB2World>("Box2D", 1, 0, "World");
     qmlRegisterType<QB2Body>("Box2D", 1, 0, "Body");
     qmlRegisterType<QB2Fixture>("Box2D", 1, 0, "Fixture");
@@ -79,6 +81,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2CapsuleShape>("Box2D", 1, 0, "CapsuleShape");
     qmlRegisterType<QB2SegmentShape>("Box2D", 1, 0, "SegmentShape");
     qmlRegisterType<QB2PolygonShape>("Box2D", 1, 0, "PolygonShape");
+    qmlRegisterType<QB2RevoluteJoint>("Box2D", 1, 0, "RevoluteJoint");
+    qmlRegisterType<QB2DistanceJoint>("Box2D", 1, 0, "DistanceJoint");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/App/qml/main.qml"_qs);
