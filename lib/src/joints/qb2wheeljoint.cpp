@@ -2,6 +2,7 @@
 #include "../qb2body.h"
 #include "../qb2world.h"
 #include <cmath>
+#include <QDebug>
 
 QB2WheelJoint::QB2WheelJoint(QObject *parent)
     : QB2Joint(parent)
@@ -164,5 +165,12 @@ void QB2WheelJoint::createJoint()
     jointDef.maxMotorTorque = m_maxMotorTorque;
 
     m_jointId = b2CreateWheelJoint(m_world->worldId(), &jointDef);
+
+    qDebug() << "WheelJoint created:"
+             << "enableMotor=" << m_enableMotor
+             << "motorSpeed=" << m_motorSpeed
+             << "maxMotorTorque=" << m_maxMotorTorque
+             << "localAxisA=" << m_localAxisA;
+
     emit jointReady();
 }

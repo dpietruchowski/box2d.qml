@@ -302,6 +302,17 @@ void QB2Body::updateTransform()
     setY(pos.y + bbOffsetY);
     setRotation(qRadiansToDegrees(angle));
 
+    // Update position property
+    QVector2D newPos(pos.x, pos.y);
+    if (m_position != newPos)
+    {
+        m_position = newPos;
+        emit positionChanged();
+    }
+
+    // Emit angle changed for QML bindings
+    emit angleChanged();
+
     m_updatingTransform = false;
 }
 

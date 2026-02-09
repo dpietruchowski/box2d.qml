@@ -19,11 +19,12 @@ Rectangle {
             Body {
                 id: ground
                 type: Body.Static
-                position: Qt.vector2d(0, 300)
+                position: Qt.vector2d(0, 200)
                 transformOrigin: Item.Center
                 
                 fixtures: [
                     Fixture {
+                        friction: 0.9
                         shape: BoxShape {
                             id: groundShape
                             width: 600
@@ -38,7 +39,7 @@ Rectangle {
             
             Car {
                 carX: 0
-                carY: -100
+                carY: 150
             }
         }
     }
