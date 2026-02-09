@@ -278,7 +278,7 @@ void QB2BoxShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId sh
 
     b2Polygon polygon = b2Shape_GetPolygon(shapeId);
     qreal shrink = strokeWidth() / 2.0;
-    
+
     QPolygonF qpolygon;
     for (int v = 0; v < polygon.count; ++v)
     {
@@ -297,7 +297,7 @@ void QB2BoxShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId sh
     painter->setPen(Qt::NoPen);
     painter->setBrush(fillColor());
     painter->drawPolygon(qpolygon);
-    
+
     if (strokeWidth() > 0)
     {
         QPen pen(strokeColor(), strokeWidth());
@@ -315,13 +315,13 @@ void QB2CircleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId
     b2Circle circle = b2Shape_GetCircle(shapeId);
     QPointF center(centroid.x() + circle.center.x,
                    centroid.y() + circle.center.y);
-    
+
     qreal adjustedRadius = qMax(0.0, circle.radius - strokeWidth() / 2.0);
 
     painter->setPen(Qt::NoPen);
     painter->setBrush(fillColor());
     painter->drawEllipse(center, adjustedRadius, adjustedRadius);
-    
+
     if (strokeWidth() > 0)
     {
         QPen pen(strokeColor(), strokeWidth());
@@ -337,17 +337,17 @@ void QB2CapsuleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeI
         return;
 
     b2Capsule capsule = b2Shape_GetCapsule(shapeId);
-    
+
     qreal shrink = strokeWidth() / 2.0;
     qreal adjustedRadius = qMax(0.0, capsule.radius - shrink);
-    
+
     QPointF c1(centroid.x() + capsule.center1.x, centroid.y() + capsule.center1.y);
     QPointF c2(centroid.x() + capsule.center2.x, centroid.y() + capsule.center2.y);
-    
+
     qreal dx = c2.x() - c1.x();
     qreal dy = c2.y() - c1.y();
     qreal length = std::sqrt(dx * dx + dy * dy);
-    
+
     if (length > 0)
     {
         qreal nx = -dy / length * adjustedRadius;
@@ -368,7 +368,7 @@ void QB2CapsuleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeI
         painter->setPen(Qt::NoPen);
         painter->setBrush(fillColor());
         painter->drawPath(path);
-        
+
         if (strokeWidth() > 0)
         {
             QPen pen(strokeColor(), strokeWidth());
@@ -382,7 +382,7 @@ void QB2CapsuleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeI
         painter->setPen(Qt::NoPen);
         painter->setBrush(fillColor());
         painter->drawEllipse(c1, adjustedRadius, adjustedRadius);
-        
+
         if (strokeWidth() > 0)
         {
             QPen pen(strokeColor(), strokeWidth());
@@ -417,7 +417,7 @@ void QB2PolygonShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeI
 
     b2Polygon polygon = b2Shape_GetPolygon(shapeId);
     qreal shrink = strokeWidth() / 2.0;
-    
+
     QPolygonF qpolygon;
     for (int v = 0; v < polygon.count; ++v)
     {
@@ -436,7 +436,7 @@ void QB2PolygonShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeI
     painter->setPen(Qt::NoPen);
     painter->setBrush(fillColor());
     painter->drawPolygon(qpolygon);
-    
+
     if (strokeWidth() > 0)
     {
         QPen pen(strokeColor(), strokeWidth());

@@ -7,6 +7,8 @@ qt_add_library(box2d_qml_lib STATIC
     src/qb2fixture.cpp
     src/qb2shape.h
     src/qb2shape.cpp
+    src/qb2joint.h
+    src/qb2joint.cpp
 )
 
 target_include_directories(box2d_qml_lib PUBLIC
