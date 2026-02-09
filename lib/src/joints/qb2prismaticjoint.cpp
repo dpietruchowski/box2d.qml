@@ -140,5 +140,6 @@ void QB2PrismaticJoint::createJoint()
     jointDef.maxMotorForce = m_maxMotorForce;
 
     m_jointId = b2CreatePrismaticJoint(m_world->worldId(), &jointDef);
+    b2Joint_WakeBodies(m_jointId);
     emit jointReady();
 }

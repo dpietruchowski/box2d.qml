@@ -143,4 +143,5 @@ void QB2MotorJoint::createJoint()
     jointDef.maxSpringTorque = m_maxSpringTorque;
 
     m_jointId = b2CreateMotorJoint(m_world->worldId(), &jointDef);
+    b2Joint_WakeBodies(m_jointId);
 }

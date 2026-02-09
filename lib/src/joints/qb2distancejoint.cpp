@@ -110,5 +110,6 @@ void QB2DistanceJoint::createJoint()
     jointDef.maxLength = m_maxLength;
 
     m_jointId = b2CreateDistanceJoint(m_world->worldId(), &jointDef);
+    b2Joint_WakeBodies(m_jointId);
     emit jointReady();
 }

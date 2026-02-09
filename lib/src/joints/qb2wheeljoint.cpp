@@ -113,7 +113,10 @@ void QB2WheelJoint::setMotorSpeed(qreal speed)
         return;
     m_motorSpeed = speed;
     if (b2Joint_IsValid(m_jointId))
+    {
         b2WheelJoint_SetMotorSpeed(m_jointId, speed);
+        b2Joint_WakeBodies(m_jointId);
+    }
     emit motorSpeedChanged();
 }
 
@@ -171,6 +174,9 @@ void QB2WheelJoint::createJoint()
              << "motorSpeed=" << m_motorSpeed
              << "maxMotorTorque=" << m_maxMotorTorque
              << "localAxisA=" << m_localAxisA;
+
+    // Wake bodies so motor starts working immediately
+    b2Joint_WakeBodies(m_jointId);
 
     emit jointReady();
 }

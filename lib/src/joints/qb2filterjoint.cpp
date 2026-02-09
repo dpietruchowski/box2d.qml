@@ -29,4 +29,5 @@ void QB2FilterJoint::createJoint()
     jointDef.base.collideConnected = m_collideConnected;
 
     m_jointId = b2CreateFilterJoint(m_world->worldId(), &jointDef);
+    b2Joint_WakeBodies(m_jointId);
 }
