@@ -7,7 +7,8 @@ qt_add_qml_module(box2d_app
     VERSION 1.0
     QML_FILES
         qml/main.qml
-        qml/MyWorld.qml
+        qml/CarDemo.qml
+        qml/Car.qml
     RESOURCES
         qml/box.svg
 )
