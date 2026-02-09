@@ -23,6 +23,12 @@ qt_add_library(box2d_qml_lib STATIC
     src/joints/qb2revolutejoint.cpp
     src/joints/qb2distancejoint.h
     src/joints/qb2distancejoint.cpp
+    src/joints/qb2prismaticjoint.h
+    src/joints/qb2prismaticjoint.cpp
+    src/joints/qb2weldjoint.h
+    src/joints/qb2weldjoint.cpp
+    src/joints/qb2wheeljoint.h
+    src/joints/qb2wheeljoint.cpp
 )
 
 target_include_directories(box2d_qml_lib PUBLIC
