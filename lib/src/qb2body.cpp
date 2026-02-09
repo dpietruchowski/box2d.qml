@@ -182,6 +182,40 @@ void QB2Body::setAngularVelocity(qreal omega)
     emit angularVelocityChanged();
 }
 
+qreal QB2Body::linearDamping() const
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return 0.0;
+    return b2Body_GetLinearDamping(m_bodyId);
+}
+
+void QB2Body::setLinearDamping(qreal damping)
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return;
+    if (qFuzzyCompare(b2Body_GetLinearDamping(m_bodyId), static_cast<float>(damping)))
+        return;
+    b2Body_SetLinearDamping(m_bodyId, static_cast<float>(damping));
+    emit linearDampingChanged();
+}
+
+qreal QB2Body::angularDamping() const
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return 0.0;
+    return b2Body_GetAngularDamping(m_bodyId);
+}
+
+void QB2Body::setAngularDamping(qreal damping)
+{
+    if (!b2Body_IsValid(m_bodyId))
+        return;
+    if (qFuzzyCompare(b2Body_GetAngularDamping(m_bodyId), static_cast<float>(damping)))
+        return;
+    b2Body_SetAngularDamping(m_bodyId, static_cast<float>(damping));
+    emit angularDampingChanged();
+}
+
 QB2Body::BodyType QB2Body::type() const
 {
     if (b2Body_IsValid(m_bodyId))

@@ -11,7 +11,6 @@ class QB2Body;
 class QB2World : public QQuickItem
 {
     Q_OBJECT
-    Q_CLASSINFO("DefaultProperty", "bodies")
     Q_PROPERTY(QVector2D gravity READ gravity WRITE setGravity NOTIFY gravityChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(qreal timeStep READ timeStep WRITE setTimeStep NOTIFY timeStepChanged)
