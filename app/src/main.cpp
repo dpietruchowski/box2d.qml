@@ -21,6 +21,7 @@
 #include <joints/qb2prismaticjoint.h>
 #include <joints/qb2weldjoint.h>
 #include <joints/qb2wheeljoint.h>
+#include <joints/qb2motorjoint.h>
 
 static QFile *logFile = nullptr;
 static QMutex logMutex;
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2PrismaticJoint>("Box2D", 1, 0, "PrismaticJoint");
     qmlRegisterType<QB2WeldJoint>("Box2D", 1, 0, "WeldJoint");
     qmlRegisterType<QB2WheelJoint>("Box2D", 1, 0, "WheelJoint");
+    qmlRegisterType<QB2MotorJoint>("Box2D", 1, 0, "MotorJoint");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/App/qml/main.qml"_qs);
