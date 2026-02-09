@@ -5,7 +5,7 @@ Item {
     id: car
     property real carX: 0
     property real carY: 0
-    property real scale: 30.0
+    property real scale: 10.0
     property real motorSpeed: 0.0
     
     // Chassis - based on Box2D car sample
@@ -27,7 +27,7 @@ Item {
         
         fixtures: [
             Fixture {
-                density: 1.0 / car.scale
+                density: 0.5 / car.scale
                 friction: 0.2
                 shape: PolygonShape {
                     vertices: [
@@ -53,14 +53,11 @@ Item {
         scale: car.scale
         position: Qt.vector2d(car.carX - 1.0 * car.scale, car.carY + 0.35 * car.scale)
         
-        Timer {
-            interval: 1000
-            running: true
-            repeat: true
-            onTriggered: {
-                console.log("Rear wheel angularVelocity:", rearWheel.angularVelocity, "linearVel:", rearWheel.linearVelocityX)
-            }
-        }
+        chassis: chassis
+        localAnchorChassis: Qt.point(-1.0 * car.scale, (0.35 - 1.0) * car.scale)
+        enableMotor: true
+        motorSpeed: car.motorSpeed
+        maxMotorTorque: 200.0
     }
     
     // Front wheel
@@ -69,39 +66,11 @@ Item {
         radius: 0.4 * car.scale
         scale: car.scale
         position: Qt.vector2d(car.carX + 1.0 * car.scale, car.carY + 0.4 * car.scale)
-    }
-    
-    // Rear axle - wheel joint with motor
-    WheelJoint {
-        bodyA: chassis
-        bodyB: rearWheel
-        localAnchorA: Qt.point(-1.0 * car.scale, (0.35 - 1.0) * car.scale)
-        localAnchorB: Qt.point(0, 0)
-        localAxisA: Qt.point(0, 1)
+        
+        chassis: chassis
+        localAnchorChassis: Qt.point(1.0 * car.scale, (0.4 - 1.0) * car.scale)
         enableMotor: true
-        maxMotorTorque: 2000.0
         motorSpeed: car.motorSpeed
-        hertz: 2.0
-        dampingRatio: 0.7
-        enableLimit: true
-        lowerTranslation: -0.25 * car.scale
-        upperTranslation: 0.25 * car.scale
-    }
-    
-    // Front axle - wheel joint with motor
-    WheelJoint {
-        bodyA: chassis
-        bodyB: frontWheel
-        localAnchorA: Qt.point(1.0 * car.scale, (0.4 - 1.0) * car.scale)
-        localAnchorB: Qt.point(0, 0)
-        localAxisA: Qt.point(0, 1)
-        enableMotor: true
-        maxMotorTorque: 2000.0
-        motorSpeed: car.motorSpeed
-        hertz: 2.0
-        dampingRatio: 0.7
-        enableLimit: true
-        lowerTranslation: -0.25 * car.scale
-        upperTranslation: 0.25 * car.scale
+        maxMotorTorque: 200.0
     }
 }
