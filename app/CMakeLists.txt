@@ -9,8 +9,10 @@ qt_add_qml_module(box2d_app
         qml/main.qml
         qml/CarDemo.qml
         qml/Car.qml
+        qml/Wheel.qml
     RESOURCES
         qml/box.svg
+        qml/wheel.svg
 )
 
 target_link_libraries(box2d_app PRIVATE

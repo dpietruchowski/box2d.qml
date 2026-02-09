@@ -12,9 +12,18 @@ Item {
         type: Body.Dynamic
         position: Qt.vector2d(car.carX, car.carY)
         
+        Timer {
+            interval: 1000
+            running: true
+            repeat: true
+            onTriggered: {
+                console.log("Chassis pos:", chassis.position, "velocity:", chassis.linearVelocityX)
+            }
+        }
+        
         fixtures: [
             Fixture {
-                density: 1.0
+                density: 0.3
                 shape: BoxShape {
                     width: 100
                     height: 20
@@ -27,43 +36,17 @@ Item {
     }
     
     // Left wheel
-    Body {
+    Wheel {
         id: leftWheel
-        type: Body.Dynamic
+        radius: 10
         position: Qt.vector2d(car.carX - 30, car.carY + 20)
-        
-        fixtures: [
-            Fixture {
-                density: 0.5
-                friction: 0.9
-                shape: CircleShape {
-                    radius: 10
-                    fillColor: "#34495e"
-                    strokeColor: "white"
-                    strokeWidth: 2
-                }
-            }
-        ]
     }
     
     // Right wheel
-    Body {
+    Wheel {
         id: rightWheel
-        type: Body.Dynamic
+        radius: 10
         position: Qt.vector2d(car.carX + 30, car.carY + 20)
-        
-        fixtures: [
-            Fixture {
-                density: 0.5
-                friction: 0.9
-                shape: CircleShape {
-                    radius: 10
-                    fillColor: "#34495e"
-                    strokeColor: "white"
-                    strokeWidth: 2
-                }
-            }
-        ]
     }
     
     // Left wheel joint
@@ -73,9 +56,9 @@ Item {
         localAnchorA: Qt.point(-30, 10)
         localAnchorB: Qt.point(0, 0)
         localAxisA: Qt.point(0, 1)
-        enableMotor: false
-        maxMotorTorque: 0
-        motorSpeed: 0
+        enableMotor: true
+        maxMotorTorque: 5000
+        motorSpeed: 250
         hertz: 4.0
         dampingRatio: 0.7
     }
@@ -87,9 +70,9 @@ Item {
         localAnchorA: Qt.point(30, 10)
         localAnchorB: Qt.point(0, 0)
         localAxisA: Qt.point(0, 1)
-        enableMotor: false
-        maxMotorTorque: 0
-        motorSpeed: 0
+        enableMotor: true
+        maxMotorTorque: 5000
+        motorSpeed: 250
         hertz: 4.0
         dampingRatio: 0.7
     }
