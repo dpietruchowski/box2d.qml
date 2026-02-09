@@ -16,6 +16,9 @@
 #include <joints/qb2joint.h>
 #include <joints/qb2revolutejoint.h>
 #include <joints/qb2distancejoint.h>
+#include <joints/qb2prismaticjoint.h>
+#include <joints/qb2weldjoint.h>
+#include <joints/qb2wheeljoint.h>
 
 static QFile *logFile = nullptr;
 static QMutex logMutex;
@@ -90,6 +93,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<QB2PolygonShape>("Box2D", 1, 0, "PolygonShape");
     qmlRegisterType<QB2RevoluteJoint>("Box2D", 1, 0, "RevoluteJoint");
     qmlRegisterType<QB2DistanceJoint>("Box2D", 1, 0, "DistanceJoint");
+    qmlRegisterType<QB2PrismaticJoint>("Box2D", 1, 0, "PrismaticJoint");
+    qmlRegisterType<QB2WeldJoint>("Box2D", 1, 0, "WeldJoint");
+    qmlRegisterType<QB2WheelJoint>("Box2D", 1, 0, "WheelJoint");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/App/qml/main.qml"_qs);
