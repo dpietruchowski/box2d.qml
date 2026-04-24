@@ -6,6 +6,10 @@
 #include <QMutex>
 #include <qb2qmlmodule.h>
 
+#ifdef QML_LIVE_ENABLED
+#include <filewatcher.h>
+#endif
+
 static QFile *logFile = nullptr;
 static QMutex logMutex;
 
@@ -70,12 +74,31 @@ int main(int argc, char *argv[])
     QB2QmlModule::registerTypes();
 
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/App/qml/main.qml"_qs);
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []()
                      { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
 
-    engine.load(url);
+#ifdef QML_LIVE_ENABLED
+    const QString qmlDir = QStringLiteral(QML_SOURCE_DIR);
+    engine.load(QUrl::fromLocalFile(qmlDir + "/main.qml"));
+
+    auto *watcher = new FileWatcher([&engine, qmlDir]()
+    {
+        auto roots = engine.rootObjects();
+        if (roots.isEmpty())
+            return;
+        QObject *loader = roots.first()->findChild<QObject *>("mainLoader");
+        if (!loader)
+            return;
+        engine.clearComponentCache();
+        loader->setProperty("source", QUrl());
+        loader->setProperty("source", QUrl::fromLocalFile(qmlDir + "/PinballDemo.qml"));
+    }, &app);
+    watcher->setDirectory(qmlDir);
+    qInfo() << "QML live reload enabled, watching:" << qmlDir;
+#else
+    engine.load(QUrl(u"qrc:/App/qml/main.qml"_qs));
+#endif
 
     int result = app.exec();
 

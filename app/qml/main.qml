@@ -7,7 +7,10 @@ Window {
     visible: true
     title: qsTr("Box2D QML - Pinball")
 
-    PinballDemo {
+    Loader {
+        objectName: "mainLoader"
         anchors.fill: parent
+        focus: true
+        source: "PinballDemo.qml"
     }
 }

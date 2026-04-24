@@ -1,4 +1,6 @@
 qt_add_library(box2d_qml_lib STATIC
+    src/filewatcher.h
+    src/filewatcher.cpp
     src/qb2qmlmodule.h
     src/qb2qmlmodule.cpp
     src/qb2world.h

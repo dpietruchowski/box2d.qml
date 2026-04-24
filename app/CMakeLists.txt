@@ -17,6 +17,13 @@ target_link_libraries(box2d_app PRIVATE
     box2d_qml_lib
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(box2d_app PRIVATE
+        QML_LIVE_ENABLED
+        QML_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml"
+    )
+endif()
+
 install(TARGETS box2d_app
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

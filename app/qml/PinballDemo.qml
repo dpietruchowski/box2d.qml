@@ -206,7 +206,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: 10
-        text: "PINBALL"
+        text: "PINBbALL"
         font.pixelSize: 22
         font.bold: true
         font.letterSpacing: 6
