@@ -20,7 +20,7 @@ public:
     bool isLoop() const { return m_isLoop; }
     void setIsLoop(bool loop);
 
-    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId) override;
+    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm) override;
 
 signals:
     void pointsChanged();

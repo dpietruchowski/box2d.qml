@@ -56,7 +56,7 @@ void QB2CapsuleShape::updateShape()
     m_capsule.radius = m_radius;
 }
 
-void QB2CapsuleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId)
+void QB2CapsuleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm)
 {
     if (!renderingEnabled())
         return;
@@ -64,10 +64,10 @@ void QB2CapsuleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeI
     b2Capsule capsule = b2Shape_GetCapsule(shapeId);
 
     qreal shrink = strokeWidth() / 2.0;
-    qreal adjustedRadius = qMax(0.0, capsule.radius - shrink);
+    qreal adjustedRadius = qMax(0.0, capsule.radius * ppm - shrink);
 
-    QPointF c1(centroid.x() + capsule.center1.x, centroid.y() + capsule.center1.y);
-    QPointF c2(centroid.x() + capsule.center2.x, centroid.y() + capsule.center2.y);
+    QPointF c1(centroid.x() + capsule.center1.x * ppm, centroid.y() + capsule.center1.y * ppm);
+    QPointF c2(centroid.x() + capsule.center2.x * ppm, centroid.y() + capsule.center2.y * ppm);
 
     qreal dx = c2.x() - c1.x();
     qreal dy = c2.y() - c1.y();

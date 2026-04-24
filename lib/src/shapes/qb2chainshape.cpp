@@ -32,7 +32,7 @@ void QB2ChainShape::setIsLoop(bool loop)
     emit isLoopChanged();
 }
 
-void QB2ChainShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId)
+void QB2ChainShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm)
 {
     if (!renderingEnabled() || m_points.size() < 2)
         return;
@@ -43,15 +43,15 @@ void QB2ChainShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId 
 
     for (int i = 0; i < m_points.size() - 1; ++i)
     {
-        QPointF p1(centroid.x() + m_points[i].x(), centroid.y() + m_points[i].y());
-        QPointF p2(centroid.x() + m_points[i + 1].x(), centroid.y() + m_points[i + 1].y());
+        QPointF p1(centroid.x() + m_points[i].x() * ppm, centroid.y() + m_points[i].y() * ppm);
+        QPointF p2(centroid.x() + m_points[i + 1].x() * ppm, centroid.y() + m_points[i + 1].y() * ppm);
         painter->drawLine(p1, p2);
     }
 
     if (m_isLoop && m_points.size() > 2)
     {
-        QPointF p1(centroid.x() + m_points.last().x(), centroid.y() + m_points.last().y());
-        QPointF p2(centroid.x() + m_points.first().x(), centroid.y() + m_points.first().y());
+        QPointF p1(centroid.x() + m_points.last().x() * ppm, centroid.y() + m_points.last().y() * ppm);
+        QPointF p2(centroid.x() + m_points.first().x() * ppm, centroid.y() + m_points.first().y() * ppm);
         painter->drawLine(p1, p2);
     }
 }

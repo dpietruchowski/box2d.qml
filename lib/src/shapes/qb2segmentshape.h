@@ -20,7 +20,7 @@ public:
     void setPoint2(const QPointF &point);
 
     b2Segment *segment() override;
-    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId) override;
+    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm) override;
 
 signals:
     void point1Changed();

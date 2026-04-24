@@ -17,6 +17,7 @@ class QB2World : public QQuickItem
     Q_PROPERTY(int velocityIterations READ velocityIterations WRITE setVelocityIterations NOTIFY velocityIterationsChanged)
     Q_PROPERTY(int positionIterations READ positionIterations WRITE setPositionIterations NOTIFY positionIterationsChanged)
     Q_PROPERTY(QQmlListProperty<QB2Body> bodies READ bodies)
+    Q_PROPERTY(qreal pixelsPerMeter READ pixelsPerMeter WRITE setPixelsPerMeter NOTIFY pixelsPerMeterChanged)
 
 public:
     explicit QB2World(QQuickItem *parent = nullptr);
@@ -39,6 +40,9 @@ public:
 
     QQmlListProperty<QB2Body> bodies();
 
+    qreal pixelsPerMeter() const { return m_pixelsPerMeter; }
+    void setPixelsPerMeter(qreal ppm);
+
     b2WorldId worldId() const { return m_worldId; }
 
     Q_INVOKABLE void step();
@@ -49,6 +53,7 @@ signals:
     void timeStepChanged();
     void velocityIterationsChanged();
     void positionIterationsChanged();
+    void pixelsPerMeterChanged();
     void stepped();
     void worldReady();
 
@@ -62,6 +67,7 @@ private:
     static void clearBodies(QQmlListProperty<QB2Body> *list);
 
     b2WorldId m_worldId;
+    qreal m_pixelsPerMeter = 100.0;
     QVector2D m_gravity{0.0f, 9.8f};
     bool m_running = false;
     qreal m_timeStep = 1.0 / 60.0;

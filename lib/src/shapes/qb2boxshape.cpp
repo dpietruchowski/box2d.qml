@@ -51,7 +51,7 @@ void QB2BoxShape::updateShape()
     m_polygon = b2MakeBox(m_width / 2.0f, m_height / 2.0f);
 }
 
-void QB2BoxShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId)
+void QB2BoxShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm)
 {
     if (!renderingEnabled())
         return;
@@ -62,8 +62,8 @@ void QB2BoxShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId sh
     QPolygonF qpolygon;
     for (int v = 0; v < polygon.count; ++v)
     {
-        qreal vx = polygon.vertices[v].x;
-        qreal vy = polygon.vertices[v].y;
+        qreal vx = polygon.vertices[v].x * ppm;
+        qreal vy = polygon.vertices[v].y * ppm;
         qreal len = std::sqrt(vx * vx + vy * vy);
         if (len > 0 && shrink > 0)
         {

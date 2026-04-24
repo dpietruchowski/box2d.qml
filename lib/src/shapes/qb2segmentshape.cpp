@@ -50,16 +50,16 @@ void QB2SegmentShape::updateShape()
     m_segment.point2 = {static_cast<float>(m_point2.x()), static_cast<float>(m_point2.y())};
 }
 
-void QB2SegmentShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId)
+void QB2SegmentShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm)
 {
     if (!renderingEnabled())
         return;
 
     b2Segment segment = b2Shape_GetSegment(shapeId);
-    QPointF p1(centroid.x() + segment.point1.x,
-               centroid.y() + segment.point1.y);
-    QPointF p2(centroid.x() + segment.point2.x,
-               centroid.y() + segment.point2.y);
+    QPointF p1(centroid.x() + segment.point1.x * ppm,
+               centroid.y() + segment.point1.y * ppm);
+    QPointF p2(centroid.x() + segment.point2.x * ppm,
+               centroid.y() + segment.point2.y * ppm);
 
     QPen pen(strokeColor(), strokeWidth());
     painter->setPen(pen);

@@ -90,8 +90,9 @@ void QB2DistanceJoint::createJoint()
 
     b2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
 
-    b2Vec2 localAnchorA = {static_cast<float>(m_localAnchorA.x()), static_cast<float>(m_localAnchorA.y())};
-    b2Vec2 localAnchorB = {static_cast<float>(m_localAnchorB.x()), static_cast<float>(m_localAnchorB.y())};
+    const float invPpm = m_world ? static_cast<float>(1.0 / m_world->pixelsPerMeter()) : 1.0f;
+    b2Vec2 localAnchorA = {static_cast<float>(m_localAnchorA.x()) * invPpm, static_cast<float>(m_localAnchorA.y()) * invPpm};
+    b2Vec2 localAnchorB = {static_cast<float>(m_localAnchorB.x()) * invPpm, static_cast<float>(m_localAnchorB.y()) * invPpm};
 
     jointDef.base.bodyIdA = m_bodyA->bodyId();
     jointDef.base.bodyIdB = m_bodyB->bodyId();

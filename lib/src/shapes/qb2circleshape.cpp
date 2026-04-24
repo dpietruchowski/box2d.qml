@@ -32,16 +32,16 @@ b2Circle *QB2CircleShape::circle()
     return &m_circle;
 }
 
-void QB2CircleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId)
+void QB2CircleShape::paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm)
 {
     if (!renderingEnabled())
         return;
 
     b2Circle circle = b2Shape_GetCircle(shapeId);
-    QPointF center(centroid.x() + circle.center.x,
-                   centroid.y() + circle.center.y);
+    QPointF center(centroid.x() + circle.center.x * ppm,
+                   centroid.y() + circle.center.y * ppm);
 
-    qreal adjustedRadius = qMax(0.0, circle.radius - strokeWidth() / 2.0);
+    qreal adjustedRadius = qMax(0.0, circle.radius * ppm - strokeWidth() / 2.0);
 
     painter->setPen(Qt::NoPen);
     painter->setBrush(fillColor());

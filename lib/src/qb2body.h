@@ -71,6 +71,7 @@ public:
 
     b2BodyId bodyId() const { return m_bodyId; }
     void setWorld(QB2World *world);
+    QB2World *world() const { return m_world; }
 
     void classBegin() override;
     void componentComplete() override;

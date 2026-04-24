@@ -19,7 +19,7 @@ public:
     void setHeight(qreal height);
 
     b2Polygon *polygon() override;
-    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId) override;
+    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm) override;
 
 signals:
     void widthChanged();

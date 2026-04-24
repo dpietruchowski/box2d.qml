@@ -80,9 +80,11 @@ void QB2Body::createBody()
     if (!b2World_IsValid(m_world->worldId()))
         return;
 
+    const qreal ppm = m_world->pixelsPerMeter();
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = static_cast<b2BodyType>(m_type);
-    bodyDef.position = {m_position.x(), m_position.y()};
+    bodyDef.position = {static_cast<float>(m_position.x() / ppm),
+                        static_cast<float>(m_position.y() / ppm)};
     m_bodyId = b2CreateBody(m_world->worldId(), &bodyDef);
 
     connect(m_world, &QB2World::stepped, this, &QB2Body::updateTransform);
@@ -96,10 +98,11 @@ void QB2Body::createBody()
 
 QVector2D QB2Body::position() const
 {
-    if (b2Body_IsValid(m_bodyId))
+    if (b2Body_IsValid(m_bodyId) && m_world)
     {
+        const qreal ppm = m_world->pixelsPerMeter();
         b2Vec2 pos = b2Body_GetPosition(m_bodyId);
-        return QVector2D(pos.x, pos.y);
+        return QVector2D(pos.x * ppm, pos.y * ppm);
     }
     return m_position;
 }
@@ -109,10 +112,14 @@ void QB2Body::setPosition(const QVector2D &position)
     if (m_position == position)
         return;
     m_position = position;
-    if (b2Body_IsValid(m_bodyId))
+    if (b2Body_IsValid(m_bodyId) && m_world)
     {
+        const qreal ppm = m_world->pixelsPerMeter();
         b2Rot rotation = b2Body_GetRotation(m_bodyId);
-        b2Body_SetTransform(m_bodyId, {position.x(), position.y()}, rotation);
+        b2Body_SetTransform(m_bodyId,
+                            {static_cast<float>(position.x() / ppm),
+                             static_cast<float>(position.y() / ppm)},
+                            rotation);
     }
     emit positionChanged();
 }
@@ -283,27 +290,24 @@ void QB2Body::clearFixtures(QQmlListProperty<QB2Fixture> *list)
 
 void QB2Body::updateTransform()
 {
-    if (!b2Body_IsValid(m_bodyId))
+    if (!b2Body_IsValid(m_bodyId) || !m_world)
         return;
 
     m_updatingTransform = true;
 
+    const qreal ppm = m_world->pixelsPerMeter();
     b2Vec2 pos = b2Body_GetPosition(m_bodyId);
     qreal angle = b2Rot_GetAngle(b2Body_GetRotation(m_bodyId));
 
-    // Box2D position is centroid, QQuickItem x/y is top-left
-    // Centroid offset from bbox min corner is stored in properties
     qreal bbOffsetX = property("_bbOffsetX").toReal();
     qreal bbOffsetY = property("_bbOffsetY").toReal();
 
-    // Centroid position - bbox_min = top-left position
-    // Since bbox_min is negative offset, we need: pos - (-bbox_min) = pos + bbox_min
-    setX(pos.x + bbOffsetX);
-    setY(pos.y + bbOffsetY);
+    setX(pos.x * ppm + bbOffsetX);
+    setY(pos.y * ppm + bbOffsetY);
     setRotation(qRadiansToDegrees(angle));
 
-    // Update position property
-    QVector2D newPos(pos.x, pos.y);
+    // Position property stays in pixels
+    QVector2D newPos(pos.x * ppm, pos.y * ppm);
     if (m_position != newPos)
     {
         m_position = newPos;
@@ -318,20 +322,22 @@ void QB2Body::updateTransform()
 
 void QB2Body::onXYChanged()
 {
-    if (!b2Body_IsValid(m_bodyId) || m_updatingTransform)
+    if (!b2Body_IsValid(m_bodyId) || m_updatingTransform || !m_world)
         return;
 
-    // QQuickItem x/y is top-left, Box2D position is centroid
-    // centroid = top-left - bbox_min
+    const qreal ppm = m_world->pixelsPerMeter();
     qreal bbOffsetX = property("_bbOffsetX").toReal();
     qreal bbOffsetY = property("_bbOffsetY").toReal();
 
-    QVector2D centroidPos(x() - bbOffsetX, y() - bbOffsetY);
-    if (centroidPos != m_position)
+    QVector2D centroidPosPx(x() - bbOffsetX, y() - bbOffsetY);
+    if (centroidPosPx != m_position)
     {
-        m_position = centroidPos;
+        m_position = centroidPosPx;
         b2Rot rotation = b2Body_GetRotation(m_bodyId);
-        b2Body_SetTransform(m_bodyId, {centroidPos.x(), centroidPos.y()}, rotation);
+        b2Body_SetTransform(m_bodyId,
+                            {static_cast<float>(centroidPosPx.x() / ppm),
+                             static_cast<float>(centroidPosPx.y() / ppm)},
+                            rotation);
         emit positionChanged();
     }
 }
@@ -396,27 +402,21 @@ void QB2Body::updateBoundingBox()
         maxY = qMax(maxY, static_cast<qreal>(aabb.upperBound.y));
     }
 
-    qreal newWidth = maxX - minX;
-    qreal newHeight = maxY - minY;
+    const qreal ppm = m_world ? m_world->pixelsPerMeter() : 1.0;
+
+    qreal newWidth = (maxX - minX) * ppm;
+    qreal newHeight = (maxY - minY) * ppm;
 
     if (newWidth > 0 && newHeight > 0)
     {
-        // Centroid is at (0,0) in shape-local coords
-        // Center of bbox is at ((minX+maxX)/2, (minY+maxY)/2)
-        // So centroid offset from bbox center is:
-        qreal centroidOffsetX = 0 - (minX + maxX) / 2.0;
-        qreal centroidOffsetY = 0 - (minY + maxY) / 2.0;
-
-        setProperty("_bbOffsetX", minX);
-        setProperty("_bbOffsetY", minY);
-        setProperty("_centroidOffsetX", centroidOffsetX);
-        setProperty("_centroidOffsetY", centroidOffsetY);
+        // Store bounding box offsets in pixels
+        setProperty("_bbOffsetX", minX * ppm);
+        setProperty("_bbOffsetY", minY * ppm);
         setWidth(newWidth);
         setHeight(newHeight);
 
-        // Set transformOrigin to centroid position in item coordinates
-        // Centroid offset from top-left = -minX, -minY
-        setTransformOriginPoint(QPointF(-minX, -minY));
+        // Transform origin = centroid in item-local pixel coords
+        setTransformOriginPoint(QPointF(-minX * ppm, -minY * ppm));
     }
 }
 
@@ -479,7 +479,8 @@ void QB2Body::paint(QPainter *painter)
             QB2Shape *shape = m_fixtures[i]->shape();
             if (shape && shape->renderingEnabled())
             {
-                shape->paint(painter, centroid, shapes[i]);
+                qreal ppm = m_world ? m_world->pixelsPerMeter() : 1.0;
+                shape->paint(painter, centroid, shapes[i], ppm);
             }
         }
     }

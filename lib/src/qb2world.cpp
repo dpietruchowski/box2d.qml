@@ -39,6 +39,14 @@ void QB2World::setGravity(const QVector2D &gravity)
     emit gravityChanged();
 }
 
+void QB2World::setPixelsPerMeter(qreal ppm)
+{
+    if (qFuzzyCompare(m_pixelsPerMeter, ppm))
+        return;
+    m_pixelsPerMeter = ppm;
+    emit pixelsPerMeterChanged();
+}
+
 bool QB2World::running() const
 {
     return m_running;

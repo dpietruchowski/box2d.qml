@@ -11,20 +11,18 @@ Body {
     property real flipperLength: 90
     property real flipperHeight: 14
     property Body pivotBody: null
-    property real motorSpeed: 0
-    property real maxMotorTorque: 8000
+    property real motorSpeed: 15       // rad/s
+    property real maxMotorTorque: 10   // N·m
 
-    // Left flipper: gravity droops negative (CW), activate = positive (CCW)
-    // Right flipper: gravity droops positive (CCW), activate = negative (CW)
     property real lowerAngle: side > 0 ? -Math.PI / 3 : -Math.PI / 4
     property real upperAngle: side > 0 ?  Math.PI / 4 :  Math.PI / 3
 
     type: Body.Dynamic
-    angularDamping: 3.0
+    angularDamping: 0.5
 
     fixtures: [
         Fixture {
-            density: 2.0
+            density: 10.0     // kg/m²
             friction: 0.4
             restitution: 0.05
             shape: BoxShape {

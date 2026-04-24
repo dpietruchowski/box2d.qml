@@ -15,7 +15,7 @@ public:
     void setRadius(qreal radius);
 
     b2Circle *circle() override;
-    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId) override;
+    void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm) override;
 
 signals:
     void radiusChanged();

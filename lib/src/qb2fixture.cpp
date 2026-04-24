@@ -1,6 +1,7 @@
 #include "qb2fixture.h"
 #include "shapes/qb2shape.h"
 #include "qb2body.h"
+#include "qb2world.h"
 
 QB2Fixture::QB2Fixture(QObject *parent)
     : QObject(parent), m_shapeId(b2_nullShapeId)
@@ -155,28 +156,51 @@ void QB2Fixture::createShape()
     shapeDef.density = m_density;
     shapeDef.isSensor = m_sensor;
 
+    const float invPpm = m_body->world()
+                       ? static_cast<float>(1.0 / m_body->world()->pixelsPerMeter())
+                       : 1.0f;
+
     b2Polygon *polygon = m_shape->polygon();
     if (polygon)
     {
-        m_shapeId = b2CreatePolygonShape(m_body->bodyId(), &shapeDef, polygon);
+        b2Polygon scaled = *polygon;
+        for (int i = 0; i < scaled.count; ++i)
+        {
+            scaled.vertices[i].x *= invPpm;
+            scaled.vertices[i].y *= invPpm;
+        }
+        scaled.centroid.x *= invPpm;
+        scaled.centroid.y *= invPpm;
+        m_shapeId = b2CreatePolygonShape(m_body->bodyId(), &shapeDef, &scaled);
     }
 
     b2Circle *circle = m_shape->circle();
     if (circle)
     {
-        m_shapeId = b2CreateCircleShape(m_body->bodyId(), &shapeDef, circle);
+        b2Circle scaled = *circle;
+        scaled.center.x *= invPpm;
+        scaled.center.y *= invPpm;
+        scaled.radius  *= invPpm;
+        m_shapeId = b2CreateCircleShape(m_body->bodyId(), &shapeDef, &scaled);
     }
 
     b2Capsule *capsule = m_shape->capsule();
     if (capsule)
     {
-        m_shapeId = b2CreateCapsuleShape(m_body->bodyId(), &shapeDef, capsule);
+        b2Capsule scaled = *capsule;
+        scaled.center1.x *= invPpm;  scaled.center1.y *= invPpm;
+        scaled.center2.x *= invPpm;  scaled.center2.y *= invPpm;
+        scaled.radius    *= invPpm;
+        m_shapeId = b2CreateCapsuleShape(m_body->bodyId(), &shapeDef, &scaled);
     }
 
     b2Segment *segment = m_shape->segment();
     if (segment)
     {
-        m_shapeId = b2CreateSegmentShape(m_body->bodyId(), &shapeDef, segment);
+        b2Segment scaled = *segment;
+        scaled.point1.x *= invPpm;  scaled.point1.y *= invPpm;
+        scaled.point2.x *= invPpm;  scaled.point2.y *= invPpm;
+        m_shapeId = b2CreateSegmentShape(m_body->bodyId(), &shapeDef, &scaled);
     }
 
     if (b2Shape_IsValid(m_shapeId))

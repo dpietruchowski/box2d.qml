@@ -35,7 +35,7 @@ public:
     virtual b2Capsule *capsule() { return nullptr; }
     virtual b2Segment *segment() { return nullptr; }
 
-    virtual void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId) = 0;
+    virtual void paint(QPainter *painter, const QPointF &centroid, b2ShapeId shapeId, qreal ppm) = 0;
 
 signals:
     void fillColorChanged();
