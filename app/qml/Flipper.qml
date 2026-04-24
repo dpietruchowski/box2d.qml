@@ -1,0 +1,52 @@
+import QtQuick
+import Box2D 1.0
+
+// Dynamic body representing a pinball flipper.
+// side: 1 = left flipper (pivot at left end, arm extends right)
+//      -1 = right flipper (pivot at right end, arm extends left)
+Body {
+    id: flipper
+
+    property real side: 1
+    property real flipperLength: 90
+    property real flipperHeight: 14
+    property Body pivotBody: null
+    property real motorSpeed: 0
+    property real maxMotorTorque: 8000
+
+    // Left flipper: gravity droops negative (CW), activate = positive (CCW)
+    // Right flipper: gravity droops positive (CCW), activate = negative (CW)
+    property real lowerAngle: side > 0 ? -Math.PI / 3 : -Math.PI / 4
+    property real upperAngle: side > 0 ?  Math.PI / 4 :  Math.PI / 3
+
+    type: Body.Dynamic
+    angularDamping: 3.0
+
+    fixtures: [
+        Fixture {
+            density: 2.0
+            friction: 0.4
+            restitution: 0.05
+            shape: BoxShape {
+                width: flipper.flipperLength
+                height: flipper.flipperHeight
+                fillColor: flipper.side > 0 ? "#CC3311" : "#1133CC"
+                strokeColor: "#FFFFFF"
+                strokeWidth: 1
+            }
+        }
+    ]
+
+    RevoluteJoint {
+        bodyA: flipper.pivotBody
+        bodyB: flipper
+        localAnchorA: Qt.point(0, 0)
+        localAnchorB: Qt.point(-flipper.side * flipper.flipperLength / 2, 0)
+        enableLimit: true
+        lowerAngle: flipper.lowerAngle
+        upperAngle: flipper.upperAngle
+        enableMotor: true
+        motorSpeed: flipper.motorSpeed
+        maxMotorTorque: flipper.maxMotorTorque
+    }
+}

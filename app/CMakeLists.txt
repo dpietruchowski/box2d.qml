@@ -7,13 +7,8 @@ qt_add_qml_module(box2d_app
     VERSION 1.0
     QML_FILES
         qml/main.qml
-        qml/CarDemo.qml
-        qml/Car.qml
-        qml/Wheel.qml
-    RESOURCES
-        qml/box.svg
-        qml/wheel.svg
-        qml/car.svg
+        qml/PinballDemo.qml
+        qml/Flipper.qml
 )
 
 target_link_libraries(box2d_app PRIVATE
