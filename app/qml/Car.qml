@@ -38,12 +38,21 @@ Item {
                         Qt.point(-1.15 * 0.85 * car.scale, 0.9 * 0.85 * car.scale),
                         Qt.point(-1.5 * 0.85 * car.scale, 0.2 * 0.85 * car.scale)
                     ]
-                    fillColor: "#e74c3c"
-                    strokeColor: "white"
-                    strokeWidth: 2
+                    fillColor: "transparent"
+                    strokeColor: "transparent"
+                    strokeWidth: 0
                 }
             }
         ]
+        
+        Image {
+            source: "car.svg"
+            width: 3.0 * car.scale * 0.85
+            height: 1.4 * car.scale * 0.85
+            x: -width / 2
+            y: -height / 2 + 0.2 * car.scale
+            smooth: true
+        }
     }
     
     // Rear wheel

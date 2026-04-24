@@ -75,6 +75,21 @@ Rectangle {
                 motorSpeed: -20.0
             }
             Car {
+                carX: 0
+                carY: 0
+                motorSpeed: -20.0
+            }
+            Car {
+                carX: 0
+                carY: 0
+                motorSpeed: -20.0
+            }
+            Car {
+                carX: 0
+                carY: 0
+                motorSpeed: -20.0
+            }
+            Car {
                 carX: -200
                 carY: -188
                 motorSpeed: -50.0
