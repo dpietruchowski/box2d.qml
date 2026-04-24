@@ -13,14 +13,14 @@ class QB2Body : public QQuickPaintedItem
     Q_OBJECT
     Q_PROPERTY(QVector2D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(qreal angle READ angle WRITE setAngle NOTIFY angleChanged)
-    Q_PROPERTY(qreal linearVelocityX READ linearVelocityX WRITE setLinearVelocityX NOTIFY linearVelocityXChanged)
-    Q_PROPERTY(qreal linearVelocityY READ linearVelocityY WRITE setLinearVelocityY NOTIFY linearVelocityYChanged)
+    Q_PROPERTY(QVector2D velocity READ velocity WRITE setVelocity NOTIFY velocityChanged)
     Q_PROPERTY(qreal angularVelocity READ angularVelocity WRITE setAngularVelocity NOTIFY angularVelocityChanged)
     Q_PROPERTY(qreal linearDamping READ linearDamping WRITE setLinearDamping NOTIFY linearDampingChanged)
     Q_PROPERTY(qreal angularDamping READ angularDamping WRITE setAngularDamping NOTIFY angularDampingChanged)
     Q_PROPERTY(BodyType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(bool showBoundingBox READ showBoundingBox WRITE setShowBoundingBox NOTIFY showBoundingBoxChanged)
     Q_PROPERTY(bool showShape READ showShape WRITE setShowShape NOTIFY showShapeChanged)
+    Q_PROPERTY(bool bullet READ bullet WRITE setBullet NOTIFY bulletChanged)
     Q_PROPERTY(QQmlListProperty<QB2Fixture> fixtures READ fixtures)
 
 public:
@@ -41,11 +41,8 @@ public:
     qreal angle() const;
     void setAngle(qreal angle);
 
-    qreal linearVelocityX() const;
-    void setLinearVelocityX(qreal vx);
-
-    qreal linearVelocityY() const;
-    void setLinearVelocityY(qreal vy);
+    QVector2D velocity() const;
+    void setVelocity(const QVector2D &velocity);
 
     qreal angularVelocity() const;
     void setAngularVelocity(qreal omega);
@@ -65,6 +62,9 @@ public:
     bool showShape() const;
     void setShowShape(bool show);
 
+    bool bullet() const;
+    void setBullet(bool bullet);
+
     void paint(QPainter *painter) override;
 
     QQmlListProperty<QB2Fixture> fixtures();
@@ -79,8 +79,7 @@ public:
 signals:
     void positionChanged();
     void angleChanged();
-    void linearVelocityXChanged();
-    void linearVelocityYChanged();
+    void velocityChanged();
     void angularVelocityChanged();
     void linearDampingChanged();
     void angularDampingChanged();
@@ -88,6 +87,7 @@ signals:
     void bodyReady();
     void showBoundingBoxChanged();
     void showShapeChanged();
+    void bulletChanged();
 
 private:
     void createBody();
@@ -103,10 +103,12 @@ private:
     b2BodyId m_bodyId;
     QB2World *m_world = nullptr;
     QVector2D m_position{0.0f, 0.0f};
+    qreal m_angle = 0.0;
     BodyType m_type = Dynamic;
     QList<QB2Fixture *> m_fixtures;
     bool m_componentComplete = false;
     bool m_updatingTransform = false;
     bool m_showBoundingBox = false;
     bool m_showShape = true;
+    bool m_bullet = false;
 };

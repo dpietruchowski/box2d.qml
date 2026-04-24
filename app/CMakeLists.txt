@@ -9,6 +9,9 @@ qt_add_qml_module(box2d_app
         qml/main.qml
         qml/PinballDemo.qml
         qml/Flipper.qml
+        qml/Pivot.qml
+        qml/Wall.qml
+        qml/Ball.qml
 )
 
 target_link_libraries(box2d_app PRIVATE

@@ -85,6 +85,8 @@ void QB2Body::createBody()
     bodyDef.type = static_cast<b2BodyType>(m_type);
     bodyDef.position = {static_cast<float>(m_position.x() / ppm),
                         static_cast<float>(m_position.y() / ppm)};
+    bodyDef.rotation = b2MakeRot(static_cast<float>(m_angle));
+    bodyDef.isBullet = m_bullet;
     m_bodyId = b2CreateBody(m_world->worldId(), &bodyDef);
 
     connect(m_world, &QB2World::stepped, this, &QB2Body::updateTransform);
@@ -127,15 +129,19 @@ void QB2Body::setPosition(const QVector2D &position)
 qreal QB2Body::angle() const
 {
     if (!b2Body_IsValid(m_bodyId))
-        return 0.0;
+        return m_angle;
     b2Rot rot = b2Body_GetRotation(m_bodyId);
     return b2Rot_GetAngle(rot);
 }
 
 void QB2Body::setAngle(qreal angle)
 {
+    m_angle = angle;
     if (!b2Body_IsValid(m_bodyId))
+    {
+        emit angleChanged();
         return;
+    }
     b2Rot rot = b2Body_GetRotation(m_bodyId);
     if (qFuzzyCompare(b2Rot_GetAngle(rot), static_cast<float>(angle)))
         return;
@@ -144,42 +150,24 @@ void QB2Body::setAngle(qreal angle)
     emit angleChanged();
 }
 
-qreal QB2Body::linearVelocityX() const
+QVector2D QB2Body::velocity() const
 {
     if (!b2Body_IsValid(m_bodyId))
-        return 0.0;
+        return QVector2D(0.0, 0.0);
     b2Vec2 vel = b2Body_GetLinearVelocity(m_bodyId);
-    return vel.x;
+    return QVector2D(vel.x, vel.y);
 }
 
-void QB2Body::setLinearVelocityX(qreal vx)
+void QB2Body::setVelocity(const QVector2D &velocity)
 {
     if (!b2Body_IsValid(m_bodyId))
         return;
     b2Vec2 vel = b2Body_GetLinearVelocity(m_bodyId);
-    if (qFuzzyCompare(vel.x, static_cast<float>(vx)))
+    if (qFuzzyCompare(vel.x, static_cast<float>(velocity.x())) &&
+        qFuzzyCompare(vel.y, static_cast<float>(velocity.y())))
         return;
-    b2Body_SetLinearVelocity(m_bodyId, {static_cast<float>(vx), vel.y});
-    emit linearVelocityXChanged();
-}
-
-qreal QB2Body::linearVelocityY() const
-{
-    if (!b2Body_IsValid(m_bodyId))
-        return 0.0;
-    b2Vec2 vel = b2Body_GetLinearVelocity(m_bodyId);
-    return vel.y;
-}
-
-void QB2Body::setLinearVelocityY(qreal vy)
-{
-    if (!b2Body_IsValid(m_bodyId))
-        return;
-    b2Vec2 vel = b2Body_GetLinearVelocity(m_bodyId);
-    if (qFuzzyCompare(vel.y, static_cast<float>(vy)))
-        return;
-    b2Body_SetLinearVelocity(m_bodyId, {vel.x, static_cast<float>(vy)});
-    emit linearVelocityYChanged();
+    b2Body_SetLinearVelocity(m_bodyId, {static_cast<float>(velocity.x()), static_cast<float>(velocity.y())});
+    emit velocityChanged();
 }
 
 qreal QB2Body::angularVelocity() const
@@ -302,9 +290,21 @@ void QB2Body::updateTransform()
     qreal bbOffsetX = property("_bbOffsetX").toReal();
     qreal bbOffsetY = property("_bbOffsetY").toReal();
 
-    setX(pos.x * ppm + bbOffsetX);
-    setY(pos.y * ppm + bbOffsetY);
-    setRotation(qRadiansToDegrees(angle));
+    QPointF worldPosPx(pos.x * ppm + bbOffsetX, pos.y * ppm + bbOffsetY);
+    QQuickItem *par = parentItem();
+    if (par && par != static_cast<QQuickItem *>(m_world)) {
+        QPointF local = m_world->mapToItem(par, worldPosPx);
+        setX(local.x());
+        setY(local.y());
+        qreal parentAngle = 0;
+        for (QQuickItem *p = par; p && p != static_cast<QQuickItem *>(m_world); p = p->parentItem())
+            parentAngle += p->rotation();
+        setRotation(qRadiansToDegrees(angle) - parentAngle);
+    } else {
+        setX(worldPosPx.x());
+        setY(worldPosPx.y());
+        setRotation(qRadiansToDegrees(angle));
+    }
 
     // Position property stays in pixels
     QVector2D newPos(pos.x * ppm, pos.y * ppm);
@@ -329,7 +329,12 @@ void QB2Body::onXYChanged()
     qreal bbOffsetX = property("_bbOffsetX").toReal();
     qreal bbOffsetY = property("_bbOffsetY").toReal();
 
-    QVector2D centroidPosPx(x() - bbOffsetX, y() - bbOffsetY);
+    QPointF localPosPx(x() - bbOffsetX, y() - bbOffsetY);
+    QQuickItem *par = parentItem();
+    QPointF worldPosPx = (par && par != static_cast<QQuickItem *>(m_world))
+                         ? par->mapToItem(m_world, localPosPx)
+                         : localPosPx;
+    QVector2D centroidPosPx(worldPosPx.x(), worldPosPx.y());
     if (centroidPosPx != m_position)
     {
         m_position = centroidPosPx;
@@ -446,6 +451,21 @@ void QB2Body::setShowShape(bool show)
     m_showShape = show;
     update();
     emit showShapeChanged();
+}
+
+bool QB2Body::bullet() const
+{
+    return m_bullet;
+}
+
+void QB2Body::setBullet(bool bullet)
+{
+    if (m_bullet == bullet)
+        return;
+    m_bullet = bullet;
+    if (b2Body_IsValid(m_bodyId))
+        b2Body_SetBullet(m_bodyId, bullet);
+    emit bulletChanged();
 }
 
 void QB2Body::paint(QPainter *painter)
