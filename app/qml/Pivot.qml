@@ -7,7 +7,7 @@ Body {
     fixtures: [
         Fixture {
             sensor: true
-            shape: CircleShape { radius: 6; fillColor: "#FFEE00" }
+            shape: CircleShape { radius: 6; fillColor: '#bfb529' }
         }
     ]
 }

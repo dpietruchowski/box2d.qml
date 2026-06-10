@@ -1,5 +1,6 @@
 #include "qb2chain.h"
 #include "qb2body.h"
+#include "qb2world.h"
 
 QB2Chain::QB2Chain(QObject *parent)
     : QObject(parent), m_chainId(b2_nullChainId)
@@ -120,18 +121,23 @@ void QB2Chain::createChain()
 
     b2ChainDef chainDef = b2DefaultChainDef();
 
+    const float invPpm = m_body->world()
+                       ? static_cast<float>(1.0 / m_body->world()->pixelsPerMeter())
+                       : 1.0f;
+
     QVector<b2Vec2> b2Points;
     b2Points.reserve(m_points.size());
     for (const QPointF &p : m_points)
     {
-        b2Points.append({static_cast<float>(p.x()), static_cast<float>(p.y())});
+        b2Points.append({static_cast<float>(p.x()) * invPpm,
+                         static_cast<float>(p.y()) * invPpm});
     }
 
     chainDef.points = b2Points.data();
     chainDef.count = b2Points.size();
     chainDef.isLoop = m_isLoop;
 
-    b2SurfaceMaterial material;
+    b2SurfaceMaterial material = b2DefaultSurfaceMaterial();
     material.friction = m_friction;
     material.restitution = m_restitution;
     chainDef.materials = &material;

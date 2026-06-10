@@ -10,6 +10,7 @@ QB2World::QB2World(QQuickItem *parent)
     m_worldId = b2CreateWorld(&worldDef);
 
     m_stepTimer = new QTimer(this);
+    m_stepTimer->setTimerType(Qt::PreciseTimer);
     connect(m_stepTimer, &QTimer::timeout, this, &QB2World::onStepTimer);
 
     QTimer::singleShot(0, this, [this]()
@@ -58,7 +59,7 @@ void QB2World::setRunning(bool running)
         return;
     m_running = running;
     if (running)
-        m_stepTimer->start(static_cast<int>(m_timeStep * 1000));
+        m_stepTimer->start(qRound(m_timeStep * 1000));
     else
         m_stepTimer->stop();
     emit runningChanged();
@@ -75,7 +76,7 @@ void QB2World::setTimeStep(qreal timeStep)
         return;
     m_timeStep = timeStep;
     if (m_running)
-        m_stepTimer->setInterval(static_cast<int>(timeStep * 1000));
+        m_stepTimer->setInterval(qRound(timeStep * 1000));
     emit timeStepChanged();
 }
 

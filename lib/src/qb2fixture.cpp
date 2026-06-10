@@ -99,8 +99,14 @@ void QB2Fixture::setSensor(bool sensor)
     if (m_sensor == sensor)
         return;
     m_sensor = sensor;
+    // Box2D v3 does not allow toggling the sensor flag on an existing shape,
+    // so recreate the shape with the new definition.
     if (b2Shape_IsValid(m_shapeId))
-        b2Shape_EnableSensorEvents(m_shapeId, sensor);
+    {
+        b2DestroyShape(m_shapeId, true);
+        m_shapeId = b2_nullShapeId;
+        createShape();
+    }
     emit sensorChanged();
 }
 
@@ -155,6 +161,7 @@ void QB2Fixture::createShape()
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.density = m_density;
     shapeDef.isSensor = m_sensor;
+    shapeDef.enableSensorEvents = m_sensor;
 
     const float invPpm = m_body->world()
                        ? static_cast<float>(1.0 / m_body->world()->pixelsPerMeter())

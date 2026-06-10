@@ -15,7 +15,7 @@ Rectangle {
             rightActive = true
         if (event.key === Qt.Key_Space) {
             ball.position = Qt.vector2d(50, 150)
-            ball.velocity = Qt.vector2d(0, 0)
+            ball.velocity = Qt.vector2d(0, -2000)
         }
     }
     Keys.onReleased: function(event) {
@@ -40,13 +40,13 @@ Rectangle {
             Flipper {
                 side: 1
                 pivotPosition: Qt.vector2d(-100, -200)
-                motorSpeed: leftActive ? 30 : -15
+                motorSpeed: leftActive ? 1000 : -15
             }
 
             Flipper {
                 side: -1
                 pivotPosition: Qt.vector2d(100, -200)
-                motorSpeed: rightActive ? -30 : 15
+                motorSpeed: rightActive ? -1000 : 15
             }
 
             // left wall

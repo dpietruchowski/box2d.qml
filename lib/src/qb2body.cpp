@@ -152,21 +152,24 @@ void QB2Body::setAngle(qreal angle)
 
 QVector2D QB2Body::velocity() const
 {
-    if (!b2Body_IsValid(m_bodyId))
+    if (!b2Body_IsValid(m_bodyId) || !m_world)
         return QVector2D(0.0, 0.0);
+    const qreal ppm = m_world->pixelsPerMeter();
     b2Vec2 vel = b2Body_GetLinearVelocity(m_bodyId);
-    return QVector2D(vel.x, vel.y);
+    return QVector2D(vel.x * ppm, vel.y * ppm);
 }
 
 void QB2Body::setVelocity(const QVector2D &velocity)
 {
-    if (!b2Body_IsValid(m_bodyId))
+    if (!b2Body_IsValid(m_bodyId) || !m_world)
         return;
+    const qreal ppm = m_world->pixelsPerMeter();
+    const float vx = static_cast<float>(velocity.x() / ppm);
+    const float vy = static_cast<float>(velocity.y() / ppm);
     b2Vec2 vel = b2Body_GetLinearVelocity(m_bodyId);
-    if (qFuzzyCompare(vel.x, static_cast<float>(velocity.x())) &&
-        qFuzzyCompare(vel.y, static_cast<float>(velocity.y())))
+    if (qFuzzyCompare(vel.x, vx) && qFuzzyCompare(vel.y, vy))
         return;
-    b2Body_SetLinearVelocity(m_bodyId, {static_cast<float>(velocity.x()), static_cast<float>(velocity.y())});
+    b2Body_SetLinearVelocity(m_bodyId, {vx, vy});
     emit velocityChanged();
 }
 
@@ -487,20 +490,15 @@ void QB2Body::paint(QPainter *painter)
     {
         QPointF centroid = transformOriginPoint();
 
-        int shapeCount = b2Body_GetShapeCount(m_bodyId);
-        if (shapeCount == 0)
-            return;
-
-        QVector<b2ShapeId> shapes(shapeCount);
-        b2Body_GetShapes(m_bodyId, shapes.data(), shapeCount);
-
-        for (int i = 0; i < m_fixtures.count() && i < shapeCount; ++i)
+        for (QB2Fixture *fixture : m_fixtures)
         {
-            QB2Shape *shape = m_fixtures[i]->shape();
+            if (!b2Shape_IsValid(fixture->shapeId()))
+                continue;
+            QB2Shape *shape = fixture->shape();
             if (shape && shape->renderingEnabled())
             {
                 qreal ppm = m_world ? m_world->pixelsPerMeter() : 1.0;
-                shape->paint(painter, centroid, shapes[i], ppm);
+                shape->paint(painter, centroid, fixture->shapeId(), ppm);
             }
         }
     }
