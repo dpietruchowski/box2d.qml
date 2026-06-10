@@ -12,6 +12,16 @@ qt_add_qml_module(box2d_app
         qml/Pivot.qml
         qml/Wall.qml
         qml/Ball.qml
+        qml/Bumper.qml
+        qml/Slingshot.qml
+        qml/Plunger.qml
+        qml/Spinner.qml
+        qml/Gate.qml
+        qml/DropTarget.qml
+        qml/KickoutHole.qml
+        qml/Magnet.qml
+        qml/Rollover.qml
+        qml/CurvedRamp.qml
 )
 
 target_link_libraries(box2d_app PRIVATE

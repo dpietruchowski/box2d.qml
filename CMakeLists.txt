@@ -12,4 +12,4 @@ qt_standard_project_setup()
 add_subdirectory(third_party/box2d)
 
 add_subdirectory(lib)
-add_subdirectory(app)
+add_subdirectory(src)

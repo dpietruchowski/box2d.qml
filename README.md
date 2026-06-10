@@ -20,7 +20,7 @@ cmake --build build/Desktop-Debug --parallel
 ## Running
 
 ```bash
-./build/Desktop-Debug/app/box2d_app
+./build/Desktop-Debug/src/box2d_app
 ```
 
 ## Example Usage
