@@ -48,6 +48,24 @@ void QB2World::setPixelsPerMeter(qreal ppm)
     emit pixelsPerMeterChanged();
 }
 
+qreal QB2World::hitEventThreshold() const
+{
+    if (b2World_IsValid(m_worldId))
+        return b2World_GetHitEventThreshold(m_worldId) * m_pixelsPerMeter;
+    return 0.0;
+}
+
+void QB2World::setHitEventThreshold(qreal threshold)
+{
+    if (!b2World_IsValid(m_worldId))
+        return;
+    const float meters = static_cast<float>(threshold / m_pixelsPerMeter);
+    if (qFuzzyCompare(b2World_GetHitEventThreshold(m_worldId), meters))
+        return;
+    b2World_SetHitEventThreshold(m_worldId, meters);
+    emit hitEventThresholdChanged();
+}
+
 bool QB2World::running() const
 {
     return m_running;
@@ -121,6 +139,81 @@ void QB2World::step()
         return;
     b2World_Step(m_worldId, m_timeStep, m_subStepCount);
     emit stepped();
+    dispatchEvents();
+}
+
+QB2Fixture *QB2World::fixtureFromShape(b2ShapeId shapeId)
+{
+    if (!b2Shape_IsValid(shapeId))
+        return nullptr;
+    return static_cast<QB2Fixture *>(b2Shape_GetUserData(shapeId));
+}
+
+void QB2World::dispatchEvents()
+{
+    const qreal ppm = m_pixelsPerMeter;
+
+    b2ContactEvents contactEvents = b2World_GetContactEvents(m_worldId);
+
+    for (int i = 0; i < contactEvents.beginCount; ++i)
+    {
+        const b2ContactBeginTouchEvent &e = contactEvents.beginEvents[i];
+        QB2Fixture *a = fixtureFromShape(e.shapeIdA);
+        QB2Fixture *b = fixtureFromShape(e.shapeIdB);
+        if (!a || !b)
+            continue;
+        a->notifyBeginContact(b);
+        b->notifyBeginContact(a);
+    }
+
+    for (int i = 0; i < contactEvents.endCount; ++i)
+    {
+        const b2ContactEndTouchEvent &e = contactEvents.endEvents[i];
+        QB2Fixture *a = fixtureFromShape(e.shapeIdA);
+        QB2Fixture *b = fixtureFromShape(e.shapeIdB);
+        if (!a || !b)
+            continue;
+        a->notifyEndContact(b);
+        b->notifyEndContact(a);
+    }
+
+    for (int i = 0; i < contactEvents.hitCount; ++i)
+    {
+        const b2ContactHitEvent &e = contactEvents.hitEvents[i];
+        QB2Fixture *a = fixtureFromShape(e.shapeIdA);
+        QB2Fixture *b = fixtureFromShape(e.shapeIdB);
+        if (!a || !b)
+            continue;
+        const QVector2D point(e.point.x * ppm, e.point.y * ppm);
+        const QVector2D normal(e.normal.x, e.normal.y);
+        const qreal speed = e.approachSpeed * ppm;
+        a->notifyHit(b, point, normal, speed);
+        b->notifyHit(a, point, -normal, speed);
+    }
+
+    b2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
+
+    for (int i = 0; i < sensorEvents.beginCount; ++i)
+    {
+        const b2SensorBeginTouchEvent &e = sensorEvents.beginEvents[i];
+        QB2Fixture *sensor = fixtureFromShape(e.sensorShapeId);
+        QB2Fixture *visitor = fixtureFromShape(e.visitorShapeId);
+        if (!sensor || !visitor)
+            continue;
+        sensor->notifyBeginContact(visitor);
+        visitor->notifyBeginContact(sensor);
+    }
+
+    for (int i = 0; i < sensorEvents.endCount; ++i)
+    {
+        const b2SensorEndTouchEvent &e = sensorEvents.endEvents[i];
+        QB2Fixture *sensor = fixtureFromShape(e.sensorShapeId);
+        QB2Fixture *visitor = fixtureFromShape(e.visitorShapeId);
+        if (!sensor || !visitor)
+            continue;
+        sensor->notifyEndContact(visitor);
+        visitor->notifyEndContact(sensor);
+    }
 }
 
 void QB2World::onStepTimer()

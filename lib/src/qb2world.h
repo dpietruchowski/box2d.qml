@@ -7,6 +7,7 @@
 #include <box2d/box2d.h>
 
 class QB2Body;
+class QB2Fixture;
 
 class QB2World : public QQuickItem
 {
@@ -18,6 +19,7 @@ class QB2World : public QQuickItem
     Q_PROPERTY(int positionIterations READ positionIterations WRITE setPositionIterations NOTIFY positionIterationsChanged)
     Q_PROPERTY(QQmlListProperty<QB2Body> bodies READ bodies)
     Q_PROPERTY(qreal pixelsPerMeter READ pixelsPerMeter WRITE setPixelsPerMeter NOTIFY pixelsPerMeterChanged)
+    Q_PROPERTY(qreal hitEventThreshold READ hitEventThreshold WRITE setHitEventThreshold NOTIFY hitEventThresholdChanged)
 
 public:
     explicit QB2World(QQuickItem *parent = nullptr);
@@ -43,6 +45,9 @@ public:
     qreal pixelsPerMeter() const { return m_pixelsPerMeter; }
     void setPixelsPerMeter(qreal ppm);
 
+    qreal hitEventThreshold() const;
+    void setHitEventThreshold(qreal threshold);
+
     b2WorldId worldId() const { return m_worldId; }
 
     Q_INVOKABLE void step();
@@ -54,6 +59,7 @@ signals:
     void velocityIterationsChanged();
     void positionIterationsChanged();
     void pixelsPerMeterChanged();
+    void hitEventThresholdChanged();
     void stepped();
     void worldReady();
 
@@ -61,6 +67,9 @@ private slots:
     void onStepTimer();
 
 private:
+    void dispatchEvents();
+    static QB2Fixture *fixtureFromShape(b2ShapeId shapeId);
+
     static void appendBody(QQmlListProperty<QB2Body> *list, QB2Body *body);
     static qsizetype bodyCount(QQmlListProperty<QB2Body> *list);
     static QB2Body *body(QQmlListProperty<QB2Body> *list, qsizetype index);

@@ -88,6 +88,9 @@ signals:
     void showBoundingBoxChanged();
     void showShapeChanged();
     void bulletChanged();
+    void beginContact(QB2Fixture *own, QB2Fixture *other);
+    void endContact(QB2Fixture *own, QB2Fixture *other);
+    void hit(QB2Fixture *own, QB2Fixture *other, QVector2D point, QVector2D normal, qreal approachSpeed);
 
 private:
     void createBody();

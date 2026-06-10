@@ -44,10 +44,11 @@ Rectangle {
 
     function resetTargets() {
         target1.reset(); target2.reset(); target3.reset()
+        ballToPlunger()
     }
 
     function ballToPlunger() {
-        ball.position = Qt.vector2d(240, -195)
+        ball.position = Qt.vector2d(100, 0)
         ball.velocity = Qt.vector2d(0, 0)
     }
 
@@ -99,13 +100,13 @@ Rectangle {
         }
 
         // Rollover lights in the top lanes
-        Rollover { ball: ball; latch: false; position: Qt.vector2d(-60, 240) }
-        Rollover { ball: ball; latch: false; position: Qt.vector2d( 60, 240) }
+        Rollover { latch: false; position: Qt.vector2d(-60, 240) }
+        Rollover { latch: false; position: Qt.vector2d( 60, 240) }
 
         // Pop bumpers
-        Bumper { ball: ball; position: Qt.vector2d(-90, 160) }
-        Bumper { ball: ball; position: Qt.vector2d( 10, 190) }
-        Bumper { ball: ball; position: Qt.vector2d(110, 160) }
+        Bumper { position: Qt.vector2d(-90, 160) }
+        Bumper { position: Qt.vector2d( 10, 190) }
+        Bumper { position: Qt.vector2d(110, 160) }
 
         // Spinner in the open field
         Spinner { pivotPosition: Qt.vector2d(-160, 60) }
@@ -113,30 +114,28 @@ Rectangle {
         // Magnet adding chaos on the right
         Magnet {
             id: magnet
-            ball: ball
             position: Qt.vector2d(100, 30)
             range: 90
             strength: 1500
         }
 
         // Drop target bank (auto-resets when all are down)
-        DropTarget { id: target1; ball: ball; position: Qt.vector2d(-120, -20)
+        DropTarget { id: target1; position: Qt.vector2d(-120, -20)
                      onKnockedDown: bankReset.check() }
-        DropTarget { id: target2; ball: ball; position: Qt.vector2d( -80, -20)
+        DropTarget { id: target2; position: Qt.vector2d( -80, -20)
                      onKnockedDown: bankReset.check() }
-        DropTarget { id: target3; ball: ball; position: Qt.vector2d( -40, -20)
+        DropTarget { id: target3; position: Qt.vector2d( -40, -20)
                      onKnockedDown: bankReset.check() }
 
         // Kickout hole throwing the ball back into play
         KickoutHole {
-            ball: ball
             position: Qt.vector2d(-200, -60)
             ejectVelocity: Qt.vector2d(250, 350)
         }
 
         // Slingshots above the flippers
-        Slingshot { ball: ball; side: 1;  position: Qt.vector2d(-150, -140) }
-        Slingshot { ball: ball; side: -1; position: Qt.vector2d( 150, -140) }
+        Slingshot { side: 1;  position: Qt.vector2d(-150, -140) }
+        Slingshot { side: -1; position: Qt.vector2d( 150, -140) }
 
         // Guides toward the flippers
         Wall { positionA: Qt.vector2d(-260, -120); positionB: Qt.vector2d(-102, -200); thickness: 8 }
@@ -155,7 +154,7 @@ Rectangle {
 
         Ball {
             id: ball
-            position: Qt.vector2d(240, -195)
+            position: Qt.vector2d(0 , 0)
         }
     }
 

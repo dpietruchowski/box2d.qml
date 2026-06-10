@@ -1,21 +1,21 @@
 import QtQuick
 import Box2D 1.0
 
-// Kickout hole (saucer): a sensor pocket that captures the ball, holds it
-// for holdMs, then kicks it out with ejectVelocity (px/s). Emits
+// Kickout hole (saucer): a sensor pocket that captures a ball entering it,
+// holds it for holdMs, then kicks it out with ejectVelocity (px/s). Emits
 // captured() and ejected(). Re-arms after a short delay so the ball is
-// not swallowed again immediately.
+// not swallowed again immediately. Works with any ball thanks to Box2D
+// sensor events; it captures whichever body fell in.
 Body {
     id: hole
 
-    property Body ball: null
     property real radius: 16
     property int holdMs: 900
     property vector2d ejectVelocity: Qt.vector2d(0, 800)
     property int score: 500
-    readonly property bool holding: _holding
+    readonly property bool holding: _captured !== null
 
-    property bool _holding: false
+    property Body _captured: null
 
     signal captured(int score)
     signal ejected()
@@ -28,35 +28,28 @@ Body {
             shape: CircleShape {
                 radius: hole.radius
                 fillColor: "#111122"
-                strokeColor: hole._holding ? "#FFEE58" : "#5C6BC0"
+                strokeColor: hole.holding ? "#FFEE58" : "#5C6BC0"
                 strokeWidth: 3
             }
         }
     ]
 
-    Timer {
-        interval: 16
-        repeat: true
-        running: hole.ball !== null && !hole._holding && !rearm.running
-        onTriggered: {
-            const dx = hole.ball.position.x - hole.position.x
-            const dy = hole.ball.position.y - hole.position.y
-            if (dx * dx + dy * dy <= hole.radius * hole.radius) {
-                hole._holding = true
-                hole.captured(hole.score)
-                holdTimer.restart()
-            }
-        }
+    onBeginContact: (own, other) => {
+        if (hole._captured || rearm.running || other.body.type !== Body.Dynamic)
+            return
+        hole._captured = other.body
+        hole.captured(hole.score)
+        holdTimer.restart()
     }
 
     // Pin the captured ball to the center of the hole.
     Timer {
         interval: 16
         repeat: true
-        running: hole._holding
+        running: hole._captured !== null
         onTriggered: {
-            hole.ball.position = hole.position
-            hole.ball.velocity = Qt.vector2d(0, 0)
+            hole._captured.position = hole.position
+            hole._captured.velocity = Qt.vector2d(0, 0)
         }
     }
 
@@ -64,8 +57,9 @@ Body {
         id: holdTimer
         interval: hole.holdMs
         onTriggered: {
-            hole._holding = false
-            hole.ball.velocity = hole.ejectVelocity
+            const ball = hole._captured
+            hole._captured = null
+            ball.velocity = hole.ejectVelocity
             hole.ejected()
             rearm.restart()
         }

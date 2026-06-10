@@ -1,13 +1,13 @@
 import QtQuick
 import Box2D 1.0
 
-// Rollover lane light: a sensor spot that lights up when the ball rolls
-// over it and emits rolled() once per pass. With latch: true the light
-// stays on until reset(); otherwise it goes out after litMs.
+// Rollover lane light: a sensor spot that lights up when a ball rolls
+// over it and emits rolled() once per pass (Box2D sensor events fire
+// once per entry). With latch: true the light stays on until reset();
+// otherwise it goes out after litMs.
 Body {
     id: rollover
 
-    property Body ball: null
     property real radius: 14
     property bool latch: true
     property int litMs: 700
@@ -17,8 +17,6 @@ Body {
     signal rolled(int score)
 
     function reset() { lit = false }
-
-    property bool _wasInside: false
 
     type: Body.Static
 
@@ -43,22 +41,11 @@ Body {
         color: rollover.lit ? "#FFD54F" : "#3A3A2A"
     }
 
-    Timer {
-        interval: 16
-        repeat: true
-        running: rollover.ball !== null
-        onTriggered: {
-            const dx = rollover.ball.position.x - rollover.position.x
-            const dy = rollover.ball.position.y - rollover.position.y
-            const inside = dx * dx + dy * dy <= rollover.radius * rollover.radius
-            if (inside && !rollover._wasInside) {
-                rollover.lit = true
-                rollover.rolled(rollover.score)
-                if (!rollover.latch)
-                    unlitTimer.restart()
-            }
-            rollover._wasInside = inside
-        }
+    onBeginContact: {
+        rollover.lit = true
+        rollover.rolled(rollover.score)
+        if (!rollover.latch)
+            unlitTimer.restart()
     }
 
     Timer {

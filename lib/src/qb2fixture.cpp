@@ -110,9 +110,61 @@ void QB2Fixture::setSensor(bool sensor)
     emit sensorChanged();
 }
 
+bool QB2Fixture::enableContactEvents() const
+{
+    return m_enableContactEvents;
+}
+
+void QB2Fixture::setEnableContactEvents(bool enable)
+{
+    if (m_enableContactEvents == enable)
+        return;
+    m_enableContactEvents = enable;
+    if (b2Shape_IsValid(m_shapeId))
+        b2Shape_EnableContactEvents(m_shapeId, enable);
+    emit enableContactEventsChanged();
+}
+
+bool QB2Fixture::enableHitEvents() const
+{
+    return m_enableHitEvents;
+}
+
+void QB2Fixture::setEnableHitEvents(bool enable)
+{
+    if (m_enableHitEvents == enable)
+        return;
+    m_enableHitEvents = enable;
+    if (b2Shape_IsValid(m_shapeId))
+        b2Shape_EnableHitEvents(m_shapeId, enable);
+    emit enableHitEventsChanged();
+}
+
 void QB2Fixture::setBody(QB2Body *body)
 {
     m_body = body;
+}
+
+void QB2Fixture::notifyBeginContact(QB2Fixture *other)
+{
+    emit beginContact(other);
+    if (m_body)
+        emit m_body->beginContact(this, other);
+}
+
+void QB2Fixture::notifyEndContact(QB2Fixture *other)
+{
+    emit endContact(other);
+    if (m_body)
+        emit m_body->endContact(this, other);
+}
+
+void QB2Fixture::notifyHit(QB2Fixture *other, const QVector2D &point,
+                           const QVector2D &normal, qreal approachSpeed)
+{
+    emit hit(other, point, normal, approachSpeed);
+    if (m_body)
+        emit m_body->hit(this, other, point, normal, approachSpeed);
 }
 
 void QB2Fixture::classBegin()
@@ -161,7 +213,12 @@ void QB2Fixture::createShape()
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.density = m_density;
     shapeDef.isSensor = m_sensor;
-    shapeDef.enableSensorEvents = m_sensor;
+    // Sensor events must be enabled on visitor shapes too, otherwise
+    // sensors never see them overlap.
+    shapeDef.enableSensorEvents = true;
+    shapeDef.enableContactEvents = m_enableContactEvents;
+    shapeDef.enableHitEvents = m_enableHitEvents;
+    shapeDef.userData = this;
 
     const float invPpm = m_body->world()
                        ? static_cast<float>(1.0 / m_body->world()->pixelsPerMeter())
