@@ -12,11 +12,15 @@ Body {
     property real plateWidth: 28
     property real plateHeight: 16
     property real pullSpeed: 1.5         // m/s (joint motor units)
-    property real launchSpeed: 12        // m/s
+    property real launchSpeed: 12        // m/s at full pull
+    property real minLaunchSpeed: launchSpeed  // m/s with no pull; lower it to make power depend on pull
     property real pixelsPerMeter: 100
     readonly property bool armed: _armed
+    readonly property real pullFraction:
+        Math.max(0, Math.min(1, (restPosition.y - position.y) / travel))
 
     property bool _armed: false
+    property real _launchSpeed: launchSpeed
 
     signal launched()
 
@@ -24,6 +28,7 @@ Body {
     function release() {
         if (!_armed)
             return
+        _launchSpeed = minLaunchSpeed + (launchSpeed - minLaunchSpeed) * pullFraction
         _armed = false
         launched()
     }
@@ -62,7 +67,7 @@ Body {
         lowerTranslation: -piston.travel / piston.pixelsPerMeter
         upperTranslation: 0.001
         enableMotor: true
-        motorSpeed: piston._armed ? -piston.pullSpeed : piston.launchSpeed
+        motorSpeed: piston._armed ? -piston.pullSpeed : piston._launchSpeed
         maxMotorForce: piston._armed ? 60 : 400
     }
 }

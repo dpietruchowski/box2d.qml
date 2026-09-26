@@ -65,3 +65,8 @@ Thumbs.db
 *.temp
 
 .claude
+
+# Android signing and scratch
+android/*.keystore
+dist/
+tmp/

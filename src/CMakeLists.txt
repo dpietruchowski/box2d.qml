@@ -1,13 +1,18 @@
 qt_add_executable(box2d_app
     src/main.cpp
+    src/gamesettings.h
+    src/gamesettings.cpp
 )
 
 qt_add_qml_module(box2d_app
     URI App
     VERSION 1.0
+    RESOURCE_PREFIX /
     QML_FILES
         qml/main.qml
         qml/PinballDemo.qml
+        qml/PinballGame.qml
+        qml/ScorePopup.qml
         qml/Flipper.qml
         qml/Pivot.qml
         qml/Wall.qml
@@ -30,7 +35,7 @@ target_link_libraries(box2d_app PRIVATE
     box2d_qml_lib
 )
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT ANDROID)
     target_compile_definitions(box2d_app PRIVATE
         QML_LIVE_ENABLED
         QML_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml"

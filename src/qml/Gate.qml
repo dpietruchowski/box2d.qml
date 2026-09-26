@@ -13,11 +13,14 @@ Body {
     property real length: 44
     property real maxOpenAngle: 1.6      // radians
     property real closeSpeed: 3          // rad/s of the return motor
-    readonly property bool open: Math.abs(angle) > 0.15
+    property real restAngle: 0           // closed-flap tilt (radians, CCW); tilt it so a ball resting on top rolls off
+    readonly property bool open: Math.abs(angle - restAngle) > 0.15
 
     type: Body.Dynamic
     angularDamping: 0.4
-    position: Qt.vector2d(hingePosition.x + side * length / 2, hingePosition.y)
+    angle: restAngle
+    position: Qt.vector2d(hingePosition.x + side * length / 2 * Math.cos(restAngle),
+                          hingePosition.y + side * length / 2 * Math.sin(restAngle))
 
     fixtures: [
         Fixture {
@@ -45,8 +48,8 @@ Body {
         localAnchorA: Qt.point(0, 0)
         localAnchorB: Qt.point(-gate.side * gate.length / 2, 0)
         enableLimit: true
-        lowerAngle: gate.side > 0 ? 0 : -gate.maxOpenAngle
-        upperAngle: gate.side > 0 ? gate.maxOpenAngle : 0
+        lowerAngle: gate.restAngle + (gate.side > 0 ? 0 : -gate.maxOpenAngle)
+        upperAngle: gate.restAngle + (gate.side > 0 ? gate.maxOpenAngle : 0)
         enableMotor: true
         motorSpeed: -gate.side * gate.closeSpeed
         maxMotorTorque: 1.0

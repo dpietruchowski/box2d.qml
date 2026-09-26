@@ -1,3 +1,6 @@
 [submodule "third_party/box2d"]
 	path = third_party/box2d
 	url = https://github.com/erincatto/box2d
+[submodule "libs"]
+	path = libs
+	url = git@github.com:dpietruchowski/app-libs.git

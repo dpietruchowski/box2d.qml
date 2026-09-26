@@ -1,10 +1,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
 #include <QDateTime>
 #include <QMutex>
 #include <qb2qmlmodule.h>
+#include <QtQml/qqml.h>
+#include "gamesettings.h"
 
 #ifdef QML_LIVE_ENABLED
 #include <filewatcher.h>
@@ -62,16 +65,23 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 int main(int argc, char *argv[])
 {
     // Setup logging
+#ifndef Q_OS_ANDROID
     logFile = new QFile("box2d_app.log");
-    if (logFile->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
+#endif
+    if (logFile && logFile->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
         qInstallMessageHandler(messageHandler);
         qInfo() << "Application started";
     }
 
     QGuiApplication app(argc, argv);
+    app.setOrganizationName(QStringLiteral("box2dqml"));
+    app.setApplicationName(QStringLiteral("Pinball"));
 
     QB2QmlModule::registerTypes();
+
+    GameSettings gameSettings;
+    qmlRegisterSingletonInstance("Pinball", 1, 0, "GameSettings", &gameSettings);
 
     QQmlApplicationEngine engine;
 
@@ -80,9 +90,12 @@ int main(int argc, char *argv[])
 
 #ifdef QML_LIVE_ENABLED
     const QString qmlDir = QStringLiteral(QML_SOURCE_DIR);
-    engine.load(QUrl::fromLocalFile(qmlDir + "/main.qml"));
+    // An optional .qml argument replaces main.qml (e.g. a scripted test harness).
+    const QStringList args = app.arguments();
+    const QString rootQml = args.size() > 1 ? args.at(1) : qmlDir + "/main.qml";
+    engine.load(QUrl::fromLocalFile(QFileInfo(rootQml).absoluteFilePath()));
 
-    auto *watcher = new FileWatcher([&engine, qmlDir]()
+    auto *watcher = new FileWatcher([&engine]()
     {
         auto roots = engine.rootObjects();
         if (roots.isEmpty())
@@ -90,9 +103,10 @@ int main(int argc, char *argv[])
         QObject *loader = roots.first()->findChild<QObject *>("mainLoader");
         if (!loader)
             return;
+        const QUrl source = loader->property("source").toUrl();
         engine.clearComponentCache();
         loader->setProperty("source", QUrl());
-        loader->setProperty("source", QUrl::fromLocalFile(qmlDir + "/PinballDemo.qml"));
+        loader->setProperty("source", source);
     }, &app);
     watcher->setDirectory(qmlDir);
     qInfo() << "QML live reload enabled, watching:" << qmlDir;
