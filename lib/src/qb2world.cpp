@@ -98,6 +98,23 @@ void QB2World::setTimeStep(qreal timeStep)
     emit timeStepChanged();
 }
 
+int QB2World::stepsPerTick() const
+{
+    return m_stepsPerTick;
+}
+
+// Splits every timer tick into several Box2D steps. Contacts are only
+// created once per step, so fast bodies (flippers) need shorter steps
+// to avoid passing through other bodies.
+void QB2World::setStepsPerTick(int steps)
+{
+    steps = qMax(1, steps);
+    if (m_stepsPerTick == steps)
+        return;
+    m_stepsPerTick = steps;
+    emit stepsPerTickChanged();
+}
+
 int QB2World::velocityIterations() const
 {
     return m_subStepCount;
@@ -137,9 +154,14 @@ void QB2World::step()
 {
     if (!b2World_IsValid(m_worldId))
         return;
-    b2World_Step(m_worldId, m_timeStep, m_subStepCount);
+    // Events are reset by every b2World_Step, so dispatch them after each one.
+    const float dt = static_cast<float>(m_timeStep / m_stepsPerTick);
+    for (int i = 0; i < m_stepsPerTick; ++i)
+    {
+        b2World_Step(m_worldId, dt, m_subStepCount);
+        dispatchEvents();
+    }
     emit stepped();
-    dispatchEvents();
 }
 
 QB2Fixture *QB2World::fixtureFromShape(b2ShapeId shapeId)

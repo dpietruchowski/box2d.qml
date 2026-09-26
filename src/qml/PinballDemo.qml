@@ -57,6 +57,7 @@ Rectangle {
         x: parent.width / 2
         y: parent.height / 2
         pixelsPerMeter: 100
+        stepsPerTick: 4     // fast flippers would tunnel through the ball at 60 Hz
         gravity: Qt.vector2d(0, -9.8)
         running: true
         transform: Scale { yScale: -1 }
@@ -144,12 +145,12 @@ Rectangle {
         Flipper {
             side: 1
             pivotPosition: Qt.vector2d(-100, -200)
-            motorSpeed: leftActive ? 1000 : -15
+            motorSpeed: leftActive ? 30 : -15
         }
         Flipper {
             side: -1
             pivotPosition: Qt.vector2d(100, -200)
-            motorSpeed: rightActive ? -1000 : 15
+            motorSpeed: rightActive ? -30 : 15
         }
 
         Ball {
@@ -177,6 +178,19 @@ Rectangle {
             if (ball.position.y < -252 && ball.position.x < 200)
                 root.ballToPlunger()
         }
+    }
+
+    FrameAnimation {
+        id: frameCounter
+        running: true
+    }
+
+    Text {
+        anchors { top: parent.top; right: parent.right; topMargin: 8; rightMargin: 12 }
+        color: "#888899"
+        font.pixelSize: 12
+        text: "FPS: " + (frameCounter.smoothFrameTime > 0
+                         ? Math.round(1 / frameCounter.smoothFrameTime) : 0)
     }
 
     Text {

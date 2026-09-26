@@ -15,6 +15,7 @@ class QB2World : public QQuickItem
     Q_PROPERTY(QVector2D gravity READ gravity WRITE setGravity NOTIFY gravityChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(qreal timeStep READ timeStep WRITE setTimeStep NOTIFY timeStepChanged)
+    Q_PROPERTY(int stepsPerTick READ stepsPerTick WRITE setStepsPerTick NOTIFY stepsPerTickChanged)
     Q_PROPERTY(int velocityIterations READ velocityIterations WRITE setVelocityIterations NOTIFY velocityIterationsChanged)
     Q_PROPERTY(int positionIterations READ positionIterations WRITE setPositionIterations NOTIFY positionIterationsChanged)
     Q_PROPERTY(QQmlListProperty<QB2Body> bodies READ bodies)
@@ -33,6 +34,9 @@ public:
 
     qreal timeStep() const;
     void setTimeStep(qreal timeStep);
+
+    int stepsPerTick() const;
+    void setStepsPerTick(int steps);
 
     int velocityIterations() const;
     void setVelocityIterations(int iterations);
@@ -56,6 +60,7 @@ signals:
     void gravityChanged();
     void runningChanged();
     void timeStepChanged();
+    void stepsPerTickChanged();
     void velocityIterationsChanged();
     void positionIterationsChanged();
     void pixelsPerMeterChanged();
@@ -80,6 +85,7 @@ private:
     QVector2D m_gravity{0.0f, 9.8f};
     bool m_running = false;
     qreal m_timeStep = 1.0 / 60.0;
+    int m_stepsPerTick = 1;
     int m_subStepCount = 4;
     QTimer *m_stepTimer = nullptr;
     QList<QB2Body *> m_bodies;
