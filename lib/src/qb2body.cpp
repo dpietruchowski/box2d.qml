@@ -122,6 +122,8 @@ void QB2Body::setPosition(const QVector2D &position)
                             {static_cast<float>(position.x() / ppm),
                              static_cast<float>(position.y() / ppm)},
                             rotation);
+        // A teleported body must simulate again even if it had fallen asleep.
+        b2Body_SetAwake(m_bodyId, true);
     }
     emit positionChanged();
 }

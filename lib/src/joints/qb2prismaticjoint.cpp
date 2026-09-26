@@ -90,7 +90,10 @@ void QB2PrismaticJoint::setMotorSpeed(qreal speed)
         return;
     m_motorSpeed = speed;
     if (b2Joint_IsValid(m_jointId))
+    {
         b2PrismaticJoint_SetMotorSpeed(m_jointId, speed);
+        b2Joint_WakeBodies(m_jointId);
+    }
     emit motorSpeedChanged();
 }
 
@@ -100,7 +103,10 @@ void QB2PrismaticJoint::setMaxMotorForce(qreal force)
         return;
     m_maxMotorForce = force;
     if (b2Joint_IsValid(m_jointId))
+    {
         b2PrismaticJoint_SetMaxMotorForce(m_jointId, force);
+        b2Joint_WakeBodies(m_jointId);
+    }
     emit maxMotorForceChanged();
 }
 

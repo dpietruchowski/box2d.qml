@@ -423,8 +423,15 @@ Rectangle {
         readonly property bool rightPressed: (tp0.pressed && tp0.x >= width / 2) || (tp1.pressed && tp1.x >= width / 2)
                                       || (tp2.pressed && tp2.x >= width / 2) || (tp3.pressed && tp3.x >= width / 2)
 
-        function anyPressed() {
-            return points.some(p => p.pressed)
+        // Points still held, not counting the ones in the event being handled:
+        // those can still report pressed while their own release is delivered.
+        function anyPressed(ending) {
+            return points.some(p => p.pressed && ending.indexOf(p) < 0)
+        }
+
+        function endTouch(ending) {
+            if (!anyPressed(ending))
+                plunger.release()
         }
 
         onPressed: {
@@ -436,14 +443,8 @@ Rectangle {
             if (root.ballInLane)
                 plunger.pull()
         }
-        onReleased: {
-            if (!anyPressed())
-                plunger.release()
-        }
-        onCanceled: {
-            if (!anyPressed())
-                plunger.release()
-        }
+        onReleased: function(touchPoints) { endTouch(touchPoints) }
+        onCanceled: function(touchPoints) { endTouch(touchPoints) }
     }
 
     // Keeps a flipper tap that ended the game from starting the next one at once.
